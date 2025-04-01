@@ -16,7 +16,7 @@ import { swagger } from '@elysiajs/swagger'
 const app = new Elysia()
   .use(swagger())
   .post("/query", ({ body })=>{
-    body.score_min *= 55
+    body.score_min *= 99
 
     return body
   }, {
