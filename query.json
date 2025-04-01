@@ -1,0 +1,14 @@
+{
+	"score_min": 50,
+	"score_max": 100,
+	"place": [
+		{
+			"state": "LA", // LA, Wasington, Tenneci
+			"city": "Holloywood"
+		},
+		{
+			"state": "Wasington",
+			"city": "springfield"
+		}
+	]
+}
