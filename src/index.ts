@@ -16,7 +16,7 @@ import { swagger } from '@elysiajs/swagger'
 const app = new Elysia()
   .use(swagger())
   .post("/query", ({ body })=>{
-    body.score_min *= 2
+    body.score_min *= 9
 
     return body
   }, {
@@ -29,7 +29,7 @@ const app = new Elysia()
       }))
     })
   })
-  .get("/restorant/:id", async ({params})=> {
+  .get("/restorants/:id", async ({params})=> {
     // TODO: return deatils of restorant.
 
 
