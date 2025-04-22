@@ -8,8 +8,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +20,17 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+
+@layer components{
+  .input-box {
+    @apply bg-slate-800 outline-none ring-2 ring-sky-500 focus:ring-white rounded-md transition p-3 
+  }
+
+  .button-box{
+    @apply rounded-md border-2 border-sky-500 w-[68px] hover:border-white transition text-sm
+  }
 }
