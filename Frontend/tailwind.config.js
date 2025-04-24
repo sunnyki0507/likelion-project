@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx}', 
@@ -6,9 +7,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+      },
       fontFamily: {
         poppins: ['var(--font-poppins)', 'sans-serif'], 
       },
+      maxWidth: {
+        'screen-xl': '1280px',
+      }
     },
   },
   plugins: [],
