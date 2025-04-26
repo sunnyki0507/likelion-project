@@ -1,0 +1,1 @@
+type ViewType = 'Card'|'List';
