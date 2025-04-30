@@ -1,47 +1,45 @@
-import { Elysia, t } from "elysia";
-import { swagger } from '@elysiajs/swagger'
+import { Elysia } from 'elysia';
+import { config } from 'dotenv';
+import axios from 'axios';
+// https://docs.developer.yelp.com/reference/v3_business_search
+config(); // .env 파일 로드
 
-// const yelpApi = new YelpApi(apiToken)
+const YELP_API_KEY = process.env.YELP_API_KEY;
 
-// SY's friedn code.
-//
-// const serverURL = 'http://ksy.com:3000'
-//
-// const res = await fetch(serverURL + '/query')
-// const body = await res.json()
-//
-// body.score_min
-//
+const app = new Elysia();
 
-const app = new Elysia()
-  .use(swagger())
-  .post("/query", ({ body })=>{
-    body.score_min *= 99
+app.get('/search', async ({ query, set }) => {
+  const zip = query.zip;
 
-    return body
-  }, {
-		body: t.Object({
-      score_min: t.Number(),
-      score_max: t.Integer(),
-      place: t.Array(t.Object({
-        state: t.String(),
-        city: t.String(),
-      }))
-    })
-  })
-  .get("/restorants/:id", async ({params})=> {
-    // TODO: return deatils of restorant.
+  if (!zip) {
+    set.status = 400;
+    return { error: 'Zip code is required' };
+  }
 
+  try {
+    const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
+      headers: {
+        Authorization: `Bearer ${YELP_API_KEY}`
+      },
+      params: {
+        location: zip,
+        term: 'restaurants',
+        limit: 15,
+        open_now: true,
+        // categories: filtering 에서 가져오기
+        // sort_by: filtering 에서 
+        // price: 1
+      }
+    });
 
-    // const id = params.id
-    // const res = await yelpApi.getDetail(id)
+    return response.data.businesses;
+  } catch (error) {
+    console.error(error);
+    set.status = 500;
+    return { error: 'Failed to fetch from Yelp' };
+  }
+});
 
-    // return res
-    return "Hello"
-  })
-  .get("/a", ()=> "KSY")
-  .listen(4000);
-
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+app.listen(3000, () => {
+  console.log('🦊 Server is running at http://localhost:3000');
+});

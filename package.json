@@ -6,11 +6,27 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/cookie": "^0.8.0",
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/jwt": "^1.2.0",
+    "@elysiajs/node": "^1.2.6",
     "@elysiajs/swagger": "^1.2.2",
-    "elysia": "latest"
+    "axios": "^1.9.0",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.9.1",
+    "cookie": "^1.0.2",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.41.0",
+    "elysia": "^1.2.25",
+    "mysql2": "^3.14.0"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@types/bcrypt": "^5.0.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.14.0",
+    "bun-types": "latest",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
   },
   "module": "src/index.js"
 }
