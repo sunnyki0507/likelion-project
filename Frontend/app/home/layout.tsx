@@ -44,9 +44,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
 
             {/* main */}
             <main className="flex-1 flex">
-                <div className="mx-auto my-auto px-4 py-8">
-                    {children}
-                </div>
+                {children}
             </main>
 
             {/* footer */}

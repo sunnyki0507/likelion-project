@@ -9,7 +9,8 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
 
     return (
         <>
-            <div key={restaurant.id} className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden mb-6">
+            <div key={restaurant.id} className="max-w-4xl mx-auto bg-green rounded-3xl shadow-lg mb-6 overflow-hidden">
+                
                 <div className="flex flex-col lg:flex-row">
                     {/* Left Content */}
                     <div className="flex-1 p-8 space-y-6">
