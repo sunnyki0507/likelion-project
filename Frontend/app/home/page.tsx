@@ -1,78 +1,21 @@
-"use client"
+import { getRestaurants } from "../(api)/getRestaurants";
+import ViewSelector from "../(components)/ViewSelector";
 
-import CardBox from "../(components)/CardBox";
-import { useState } from "react";
-import CardBoxHolder from "../(components)/CardBoxHolder";
+const sampleTag: Tags = {
+    location: "irvine",
+    category: "Thai",
+    distance: 5,
+    ratings: 4,
+    delivery: true,
+    vegan: false,
+}
 
-
-const restaurants: RestaurantInfo[] = [
-    {
-        id: "1",
-        name: "Business Name",
-        rating: 4.0,
-        reviews: 292,
-        distance: "2.4km",
-        category: "Category",
-        isOpen: true,
-        hasOnlineOrder: true,
-        hasDelivery: true,
-        takesReservations: true,
-        image: "/images/restaurant1.jpg",
-        likes: 500
-    },
-    {
-        id: "2",
-        name: "Business Name",
-        rating: 4.0,
-        reviews: 292,
-        distance: "2.4km",
-        category: "Category",
-        isOpen: true,
-        hasOnlineOrder: true,
-        hasDelivery: true,
-        takesReservations: true,
-        image: "/images/restaurant1.jpg",
-        likes: 500
-    },
-    {
-        id: "3",
-        name: "Business Name",
-        rating: 4.0,
-        reviews: 292,
-        distance: "2.4km",
-        category: "Category",
-        isOpen: true,
-        hasOnlineOrder: true,
-        hasDelivery: true,
-        takesReservations: true,
-        image: "/images/restaurant1.jpg",
-        likes: 500
-    },
-    {
-        id: "4",
-        name: "Business Name",
-        rating: 4.0,
-        reviews: 292,
-        distance: "2.4km",
-        category: "Category",
-        isOpen: true,
-        hasOnlineOrder: true,
-        hasDelivery: true,
-        takesReservations: true,
-        image: "/images/restaurant1.jpg",
-        likes: 500
-    },
-];
-
-export default function HomePage() {
-    const [currentView, changeView] = useState<ViewType>('Card');
+export default async function HomePage() {
+    const restaurants = await getRestaurants({ tags: sampleTag, size: 5 });
 
     return (
         <>
-            {currentView == 'Card' ?
-                (<CardBoxHolder initRestaurants={restaurants} />) :
-                (<></>)
-            }
+            <ViewSelector initRestaurants={restaurants}/>
         </>
     );
 }

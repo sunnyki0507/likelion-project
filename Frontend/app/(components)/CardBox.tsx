@@ -9,9 +9,9 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
 
     return (
         <>
-            <div key={restaurant.id} className="max-w-4xl mx-auto bg-green rounded-3xl shadow-lg mb-6 overflow-hidden">
+            <div key={restaurant.id} className="w-[870px] h-[500px] mx-auto bg-green rounded-3xl shadow-lg mb-6 overflow-hidden">
                 
-                <div className="flex flex-col lg:flex-row">
+                <div className="flex flex-row">
                     {/* Left Content */}
                     <div className="flex-1 p-8 space-y-6">
                         {/* Likes Counter */}
@@ -64,7 +64,7 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
                     </div>
 
                     {/* Right Image */}
-                    <div className="relative lg:w-[500px] aspect-square">
+                    <div className="relative w-[500px] aspect-square">
                         <Image
                             src={restaurant.image || "/images/restaurant1.jpg"}
                             alt={restaurant.name}
