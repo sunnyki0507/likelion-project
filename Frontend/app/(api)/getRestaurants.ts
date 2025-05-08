@@ -1,10 +1,17 @@
 "use server"
 
 
-export async function getRestaurants({ tags, size = 10, skip = 0 }: { tags: Tags, size?:number, skip?: number }) {
+// export async function getRestaurants({ tags, size = 10, skip = 0 }: { tags: Tags, size?:number, skip?: number }) {
 
-    return restaurants.slice(skip, skip+size);
+//     return restaurants.slice(skip, skip+size);
+// }
+
+export async function getRestaurants({ tags, size = 10, skip = 0 }: { tags: Tags; size?: number; skip?: number }) {
+    // In a real implementation, you would filter by tags
+    // For now, we'll just return the mock data
+    return restaurants.slice(skip, skip + size)
 }
+
 
 const restaurants: RestaurantInfo[] = [
     {
