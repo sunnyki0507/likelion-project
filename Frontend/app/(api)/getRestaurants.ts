@@ -1,8 +1,25 @@
 "use server"
-
-export async function getRestaurants({ tags, size = 10, skip = 0 }: { tags: Tags; size?: number; skip?: number }) {
-    return restaurants.slice(skip, skip + size)
+import type { Tags, TagFilters } from "../../types/tags"
+export type RestaurantInfo = {
+    id: string;
+    name: string;
+    rating: number;
+    reviews: number;
+    distance: string;
+    category: string;
+    isOpen: boolean;
+    hasOnlineOrder: boolean;
+    hasDelivery: boolean;
+    takesReservations: boolean;
+    image: string;
+    likes: number;
 }
+
+export async function getRestaurants({ tagFilters, size = 10, skip = 0 }: { tagFilters: TagFilters; size?: number; skip?: number }) {
+  // filter restaurants based on tagFilters
+  return restaurants.slice(skip, skip + size)
+}
+
 
 const restaurants: RestaurantInfo[] = [
     {
