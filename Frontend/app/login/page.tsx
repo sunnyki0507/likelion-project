@@ -160,9 +160,9 @@ const handleLogin = async (e: React.FormEvent) => {
             {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
             <form onSubmit={handleSignUp} className="space-y-4">
               <div>
-                <label className="block text-xs font-light text-gray-500">Email or mobile phone number</label>
+                <label className="block text-xs font-light text-gray-500">Email</label>
                 <input
-                  type="text"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full mt-1 h-10 p-3 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400"
@@ -227,7 +227,7 @@ const handleLogin = async (e: React.FormEvent) => {
               <form onSubmit={handleLogin}>
                 {/* email */}
                 <div className="flex-2 flex flex-col justify-center px-4">
-                  <label className="text-xs font-light text-gray-500">Email or mobile phone number</label>
+                  <label className="text-xs font-light text-gray-500">Email</label>
                   <input
                     type="text"
                     value={email}
