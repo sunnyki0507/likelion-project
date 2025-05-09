@@ -1,18 +1,45 @@
+//import { Geist, Geist_Mono } from "next/font/google";
+//import type { Metadata } from "next";
+//import { ReactNode, useContext } from "react";
+
 "use client"
 
-import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { useState } from "react";
+
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
-import type { Metadata } from "next";
-import { ReactNode, createContext, useContext } from "react";
+
+import TagOverlay from "../(components)/TagOverlay";
+
+import Modal from 'react-modal'
+import CardBoxHolder from "../(components)/CardBoxHolder";
+
+
+const modalStyle = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: "white",
+        opacity: "60%",
+        //backdropFilter: "blur(2px)",
+        borderRadius: "10px",
+    },
+};
+
+Modal.setAppElement('#_home');
 
 
 
-export default function HomeLayout({ children }: { children: ReactNode }) {
-
+export default function HomePage({ initRestaurants }: { initRestaurants: RestaurantInfo[] }) {
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [currentView, changeView] = useState<ViewType>('Card');
 
     return (
-        <div className="w-full h-full flex flex-col bg-white text-neutral-800 ">
+        <div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">
 
             {/* header */}
             <header className="sticky top-0 z-50 w-full border-b border-neutral-300">
@@ -24,7 +51,10 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
                     </div>
                     <nav className="flex items-center gap-4">
                         <Link href="/favorites" className="text-sm">Favorites</Link>
-                        <Link href="/customize" className="text-sm">Customize</Link>
+
+                        {/* enable tag overlay */}
+                        <div className="text-sm" onClick={() => setModalOpen(true)}>Customize</div>
+
                         <Link href="/change-view" className="text-sm">Change view</Link>
                         <Link href="/profile" className="text-sm">Profile</Link>
                     </nav>
@@ -44,7 +74,10 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
 
             {/* main */}
             <main className="flex-1 flex">
-                {children}
+                {currentView == 'Card' ?
+                    (<CardBoxHolder initRestaurants={initRestaurants} />) :
+                    (<></>)
+                }
             </main>
 
             {/* footer */}
@@ -58,6 +91,16 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </footer>
+
+            {/* tag overlay */}
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={() => setModalOpen(false)}
+                style={modalStyle}
+            //overlayClassName="bg-transparent"
+            >
+                <TagOverlay />
+            </Modal>
         </div>
-    )
+    );
 }
