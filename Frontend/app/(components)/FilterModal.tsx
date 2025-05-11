@@ -24,6 +24,11 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
   const [delivery, setDelivery] = useState(false)
   const [vegan, setVegan] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
+  const [locations] = useState(["Irvine Spectrum Center", "Newport Beach", "Costa Mesa", "Laguna Beach", "Anaheim"])
+  const [selectedLocation, setSelectedLocation] = useState("Irvine Spectrum Center")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isSearching, setIsSearching] = useState(false)
 
   // Close modal with ESC key
   useEffect(() => {
@@ -91,20 +96,89 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
         <div className="p-6">
           {/* Location Selector */}
           <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center">
+            <div className="flex items-center relative">
               <MapPinIcon className="w-10 h-10 text-black mr-3" />
               <div>
                 <p className="text-gray-500 text-sm">Current location</p>
-                <div className="flex items-center">
-                  <h2 className="text-xl font-medium">Irvine Spectrum Center</h2>
+                <button
+                  onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                  className="flex items-center hover:bg-gray-100 rounded-md px-2 py-1 transition-colors"
+                >
+                  <h2 className="text-xl font-medium">{selectedLocation}</h2>
                   <ChevronDownIcon className="w-5 h-5 ml-2" />
-                </div>
+                </button>
+
+                {isLocationDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg z-10 py-1">
+                    {locations.map((location) => (
+                      <button
+                        key={location}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                          location === selectedLocation ? "bg-gray-50 font-medium" : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedLocation(location)
+                          setIsLocationDropdownOpen(false)
+                        }}
+                      >
+                        {location}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="bg-gray-100 p-3 rounded-lg">
+
+            <button
+              onClick={() => setIsSearching(true)}
+              className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200 transition-colors"
+            >
               <MagnifyingGlassIcon className="w-6 h-6 text-gray-500" />
-            </div>
+            </button>
           </div>
+
+          {/* Search overlay */}
+          {isSearching && (
+            <div className="fixed inset-0 bg-white z-50 p-4">
+              <div className="flex items-center mb-6">
+                <button onClick={() => setIsSearching(false)} className="p-2 mr-2 hover:bg-gray-100 rounded-full">
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Search locations..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full p-2 pl-10 border rounded-md"
+                    autoFocus
+                  />
+                  <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                {locations
+                  .filter((location) => location.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((location) => (
+                    <button
+                      key={location}
+                      className="w-full text-left p-3 hover:bg-gray-100 border-b"
+                      onClick={() => {
+                        setSelectedLocation(location)
+                        setSearchQuery("")
+                        setIsSearching(false)
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <MapPinIcon className="w-5 h-5 mr-3 text-gray-500" />
+                        {location}
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
