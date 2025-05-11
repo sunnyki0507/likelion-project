@@ -34,3 +34,41 @@ body {
     @apply rounded-md border-2 border-sky-500 w-[68px] hover:border-white transition text-sm
   }
 }
+
+.swiper {
+  width: 100%;
+  padding: 2rem;
+}
+
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-gray-900;
+}
+
+.swiper-pagination-bullet {
+  @apply bg-gray-900;
+}
+
+.swiper-pagination-bullet-active {
+  @layer components {
+    .swiper-pagination-bullet-active {
+      @apply bg-gray-900;
+    }
+  }
+}
+
+/* Card effect styles */
+.swiper-effect-cards {
+  overflow: visible;
+}
+
+.swiper-effect-cards .swiper-slide {
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+}

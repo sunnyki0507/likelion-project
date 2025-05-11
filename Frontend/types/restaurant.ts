@@ -11,4 +11,5 @@ export interface RestaurantInfo {
     takesReservations: boolean;
     image: string;
     likes?: number;
+    description?: string;
 }
