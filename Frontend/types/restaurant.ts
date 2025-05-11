@@ -1,4 +1,4 @@
-interface RestaurantInfo {
+export interface RestaurantInfo {
     id: string;
     name: string;
     rating: number;

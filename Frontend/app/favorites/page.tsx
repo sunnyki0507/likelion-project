@@ -1,8 +1,8 @@
 import { getRestaurants } from "../(api)/getRestaurants"
 import ViewSelector from "../(components)/ViewSelector"
-import type { Tags } from "@/types/tags"
+import type { TagFilters } from "../../types/tags"
 
-const sampleTag: Tags = {
+const sampleTagFilters: TagFilters = {
   location: "irvine",
   category: "Thai",
   distance: 5,
@@ -12,7 +12,7 @@ const sampleTag: Tags = {
 }
 
 export default async function FavoritesPage() {
-  const restaurants = await getRestaurants({ tags: sampleTag, size: 5 })
+  const restaurants = await getRestaurants({ tagFilters: sampleTagFilters, size: 5 })
 
   return (
     <div className="w-full max-w-screen-xl mx-auto px-4 py-8">

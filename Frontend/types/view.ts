@@ -1,1 +1,1 @@
-type ViewType = 'Card'|'List';
+export type ViewType = 'Card'|'List';

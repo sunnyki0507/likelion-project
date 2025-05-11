@@ -1,4 +1,4 @@
-interface Tags {
+export interface TagFilters {
     location: string;
     category: "Asain Fusion"|"Carribean"|"Indian"|"Mediterranean"|"Chinese Food"|
                 "Italian"|"Japanese"|"Thai";
@@ -7,3 +7,6 @@ interface Tags {
     delivery: boolean;
     vegan: boolean;
 }
+
+// Change this to match the structure you're using in sampleTag
+export type Tags = TagFilters;  // Now Tags will have the same structure as TagFilters

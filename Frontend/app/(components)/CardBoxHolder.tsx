@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import CardBox from "../(components)/CardBox";
-import { getRestaurants } from "../(api)/getRestaurants";
+import { getRestaurants, RestaurantInfo } from "../(api)/getRestaurants";
+import { Tags } from "@/types/tags";
 
 const cardSetting = {
     w: 870,
@@ -84,7 +85,7 @@ export default function CardBoxHolder({ initRestaurants }: { initRestaurants: Re
         //fetch
         if (restaurants.length - 1 <= curIndex) {
             (async () => {
-                const moreRestaurants = await getRestaurants({ tags: sampleTag, size: 5, skip: restaurants.length });
+                const moreRestaurants = await getRestaurants({ tagFilters: sampleTag, size: 5, skip: restaurants.length });
                 setRestaurants((prev) => {
                     const updated = [...prev, ...moreRestaurants];
                     restaurantsLengthRef.current = updated.length;
