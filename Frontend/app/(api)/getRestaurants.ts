@@ -1,106 +1,30 @@
-// import type { TagFilters } from "@/types/tags"
-
-// export interface RestaurantInfo {
-//   id: string
-//   name: string
-//   rating: number
-//   reviews: number
-//   distance: string
-//   category: string
-//   isOpen: boolean
-//   hasOnlineOrder: boolean
-//   hasDelivery: boolean
-//   takesReservations: boolean
-//   image: string
-//   likes?: number
-// }
-
-// interface GetRestaurantsParams {
-//   tagFilters: TagFilters
-//   size?: number
-//   skip?: number
-// }
-
-// // Sample restaurant data
-// const sampleRestaurants: RestaurantInfo[] = [
-//   {
-//     id: "1",
-//     name: "Business 1",
-//     rating: 4,
-//     reviews: 292,
-//     distance: "2.4km",
-//     category: "Category",
-//     isOpen: true,
-//     hasOnlineOrder: true,
-//     hasDelivery: true,
-//     takesReservations: true,
-//     image:
-//       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/restaurant1.jpg-r47O9tQO2PAR18Ip8komTkZcfPWCqJ.jpeg",
-//     likes: 500,
-//   },
-//   {
-//     id: "2",
-//     name: "Thai Spice",
-//     rating: 4.5,
-//     reviews: 156,
-//     distance: "1.8km",
-//     category: "Thai",
-//     isOpen: true,
-//     hasOnlineOrder: true,
-//     hasDelivery: true,
-//     takesReservations: false,
-//     image:
-//       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/restaurant3.jpg-V9TP6TEHG1Pmicz48F82njoFyjM57v.jpeg",
-//     likes: 320,
-//   },
-//   {
-//     id: "3",
-//     name: "Noodle House",
-//     rating: 3.8,
-//     reviews: 87,
-//     distance: "3.2km",
-//     category: "Asian Fusion",
-//     isOpen: false,
-//     hasOnlineOrder: false,
-//     hasDelivery: true,
-//     takesReservations: true,
-//     image:
-//       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/restaurant2.jpg-Zsx5wDUpmxSLjyh485HIDdG4WOXNcc.jpeg",
-//     likes: 210,
-//   },
-// ]
-
-// export async function getRestaurants({
-//   tagFilters,
-//   size = 10,
-//   skip = 0,
-// }: GetRestaurantsParams): Promise<RestaurantInfo[]> {
-//   // In a real app, this would be an API call with the filters applied
-//   // For now, we'll just return our sample data
-
-//   // Simulate a delay to mimic a real API call
-//   await new Promise((resolve) => setTimeout(resolve, 500))
-
-//   return sampleRestaurants.slice(skip, skip + size)
-// }
-// (api)/getRestaurants.ts
-
 import type { FilterState } from "../(components)/FilterModal"
 
-export async function getRestaurantsFromFilters(filter: FilterState, zip: string) {
-  const categories = filter.categories[0] || "" //우선 하나만
+export async function getRestaurantsFromFilters(filter: FilterState, location: string) {
+  const category = filter.categories[0] || ""
   const pricing = filter.rating.toString()
 
   const params = new URLSearchParams({
-    location: zip,
-    categories,
+    location,
+    categories: category,
     pricing,
   })
 
-  const res = await fetch(`http://localhost:3000/search?${params.toString()}`)
+  const url = `http://localhost:3000/search?${params.toString()}`
+  console.log("Sending request to:", url)
 
-  if (!res.ok) throw new Error("API 요청 실패")
+  const res = await fetch(url)
 
-  return res.json()
+  if (!res.ok) {
+    console.error("API 요청 실패:", res.status, res.statusText)
+    throw new Error("API 요청 실패")
+  }
+
+  const data = await res.json()
+  console.log("받은 데이터:", data)
+
+  return data
 }
+
+
 

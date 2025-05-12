@@ -1,20 +1,10 @@
 import { Elysia, t } from "elysia";
 import { swagger } from '@elysiajs/swagger'
-
-// const yelpApi = new YelpApi(apiToken)
-
-// SY's friedn code.
-//
-// const serverURL = 'http://ksy.com:3000'
-//
-// const res = await fetch(serverURL + '/query')
-// const body = await res.json()
-//
-// body.score_min
-//
+import { searchPlugin } from './search' 
 
 const app = new Elysia()
   .use(swagger())
+  .use(searchPlugin)
   .post("/query", ({ body })=>{
     body.score_min *= 99
 
@@ -40,8 +30,10 @@ const app = new Elysia()
     return "Hello"
   })
   .get("/a", ()=> "KSY")
-  .listen(4000);
-
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  
+  .listen(3000, () => {
+    console.log('🚀 Backend running on http://localhost:3000')
+  }
+// console.log(
+//   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
