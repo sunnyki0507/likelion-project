@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import type { RestaurantInfo } from "../(api)/getRestaurants"
 import type { ViewType } from "@/types/view"
-import FavoriteCard from "./FavoriteCard"
+import FavoriteCard from "./(favoriteCard)/FavoriteCard"
 import ViewToggle from "./ViewToggle"
+import { RestaurantInfo } from "@/types/restaurant"
 
 export default function ViewSelector({ initRestaurants }: { initRestaurants: RestaurantInfo[] }) {
   const [currentView, setCurrentView] = useState<ViewType>("Card")

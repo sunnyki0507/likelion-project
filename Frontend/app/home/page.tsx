@@ -1,109 +1,51 @@
-// import { getRestaurants } from "../(api)/getRestaurants"
-// import CardBoxHolder from "../(components)/CardBoxHolder"
-// import type { TagFilters } from "../../types/tags"
-
-// const sampleTagFilters: TagFilters = {
-//   location: "irvine",
-//   category: "Thai",
-//   distance: 5,
-//   ratings: 4,
-//   delivery: true,
-//   vegan: false,
-// }
-
-// export default async function HomePage() {
-//   const restaurants = await getRestaurants({ tagFilters: sampleTagFilters, size: 5 })
-
-//   // Add sample data to match the design
-//   const enhancedRestaurants = restaurants.map((restaurant) => ({
-//     ...restaurant,
-//     likes: restaurant.likes || 500,
-//     reviews: restaurant.reviews || 292,
-//     distance: restaurant.distance || "2.4km",
-//     description: "Description about the restaurant",
-//   }))
-
-//   return (
-//     <div className="w-full h-[calc(100vh-132px)]">
-//       <CardBoxHolder initRestaurants={enhancedRestaurants} />
-//     </div>
-//   )
-// }
-
 "use client"
 
-import { useEffect, useState } from "react"
-import { getRestaurants } from "../(api)/getRestaurants"
-import CardBoxHolder from "../(components)/CardBoxHolder"
-import RestaurantListView from "../(components)/RestaurantListView"
-import { useView } from "../(context)/ViewContext"
-import type { RestaurantInfo } from "../(api)/getRestaurants"
-import type { TagFilters } from "../../types/tags"
+import { useState } from "react"
+import Link from "next/link"
+import CardBoxHolder from "../(components)/(cardBox)/CardBoxHolder"
+import NavBar from "../(components)/NavBar"
+import { ViewType } from "@/types/view"
+import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolder"
+import { TagFilters } from "@/types/tags"
+import { sampleTagFilters } from "@/types/tags"
 
-export default function HomePage() {
-  const { viewMode } = useView()
-  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadRestaurants() {
-      setLoading(true)
-      try {
-        const tagFilters: TagFilters = {
-          location: "irvine",
-          category: "Thai",
-          distance: 5,
-          ratings: 4,
-          delivery: true,
-          vegan: false,
-        }
 
-        const data = await getRestaurants({ tagFilters, size: 5 })
+export default function Home() {
+	const [currentView, changeView] = useState<ViewType>('Card');
 
-        // Add sample data to match the design
-        const enhancedRestaurants = data.map((restaurant) => ({
-          ...restaurant,
-          likes: restaurant.likes || 500,
-          reviews: restaurant.reviews || 292,
-          distance: restaurant.distance || "2.4km",
-          description: "Description about the restaurant",
-        }))
+    const tagFilterState = useState<TagFilters>(sampleTagFilters);
+    const [tagFilters, setTagFilters] = tagFilterState;
 
-        setRestaurants(enhancedRestaurants)
-      } catch (error) {
-        console.error("Failed to load restaurants:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+	return (
+		<div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">
 
-    loadRestaurants()
-  }, [])
+			{/* header */}
+			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
 
-  if (loading) {
-    return (
-      <div className="w-full h-[calc(100vh-132px)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
-      </div>
-    )
-  }
+			{/* main */}
+			<main className="flex-1 flex">
+				{currentView === 'Favorites' ? (
+					<FavoriteCardHolder />
+				) : currentView === 'Card' ? (
+					<CardBoxHolder tagFilters={tagFilters} />
+				) : (
+					<></>
+				)}
+			</main>
 
-  return (
-    <>
-      {viewMode === "card" ? (
-        <div className="w-full h-[calc(100vh-132px)]">
-          <CardBoxHolder initRestaurants={restaurants} />
-        </div>
-      ) : (
-        <div className="w-full px-4 py-8 max-w-screen-xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Restaurants Near You</h1>
-          <div>
-            {restaurants.map((restaurant) => (
-              <RestaurantListView key={restaurant.id} restaurant={restaurant} />
-            ))}
-          </div>
-        </div>
-      )}
-    </>
-  )
+			{/* footer */}
+			<footer className="w-full mt-auto border-t border-neutral-300">
+				<div className="max-w-screen-xl mx-auto px-4">
+					<div className="flex items-center justify-center gap-4 text-sm text-gray-600 py-3">
+						<Link href="/help">Help Center</Link>
+						<Link href="/terms">Terms of Service</Link>
+						<Link href="/privacy">Privacy Policy</Link>
+						<Link href="/cookies">Cookie Policy</Link>
+					</div>
+				</div>
+			</footer>
+
+		</div>
+	);
 }
