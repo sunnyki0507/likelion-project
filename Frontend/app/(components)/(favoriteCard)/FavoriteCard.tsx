@@ -5,7 +5,7 @@ import { HeartIcon as HeartOutlineIcon } from "@heroicons/react/24/outline"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import type { RestaurantInfo } from "../(api)/getRestaurants"
+import { RestaurantInfo } from "@/types/restaurant"
 
 export default function FavoriteCard({ restaurant }: { restaurant: RestaurantInfo }) {
   const [isFavorite, setIsFavorite] = useState(true)

@@ -1,19 +1,6 @@
+import { RestaurantInfo } from "@/types/restaurant"
 import type { TagFilters } from "@/types/tags"
 
-export interface RestaurantInfo {
-  id: string
-  name: string
-  rating: number
-  reviews: number
-  distance: string
-  category: string
-  isOpen: boolean
-  hasOnlineOrder: boolean
-  hasDelivery: boolean
-  takesReservations: boolean
-  image: string
-  likes?: number
-}
 
 interface GetRestaurantsParams {
   tagFilters: TagFilters
@@ -75,11 +62,15 @@ export async function getRestaurants({
   size = 10,
   skip = 0,
 }: GetRestaurantsParams): Promise<RestaurantInfo[]> {
-  // In a real app, this would be an API call with the filters applied
-  // For now, we'll just return our sample data
 
   // Simulate a delay to mimic a real API call
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  return sampleRestaurants.slice(skip, skip + size)
+  // Create a copy of the sample restaurants with unique IDs
+  const restaurants = sampleRestaurants.map((restaurant, index) => ({
+    ...restaurant,
+    id: `${restaurant.id}-${skip + index + 1}` 
+  }))
+
+  return restaurants.slice(0, size)
 }

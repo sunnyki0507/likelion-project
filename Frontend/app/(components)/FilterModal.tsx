@@ -1,34 +1,45 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { MapPinIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
+import { TagFilters } from "@/types/tags"
 
 interface FilterModalProps {
   isOpen: boolean
   onClose: () => void
-  onApply: (filters: FilterState) => void
+  tagFilterState: [TagFilters, (tagFilters: TagFilters) => void]
 }
 
-interface FilterState {
-  categories: string[]
-  distance: number
-  rating: number
-  delivery: boolean
-  vegan: boolean
-}
+export default function FilterModal({ isOpen, onClose, tagFilterState }: FilterModalProps) {
+  const tagFiltersRef = useRef(tagFilterState[0]);
+  const setTagFiltersRef = useRef(tagFilterState[1]);
+  const [, forceUpdate] = useState({});
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [locations] = useState(["Irvine Spectrum Center", "Newport Beach", "Costa Mesa", "Laguna Beach", "Anaheim"]);
+  const [selectedLocation, setSelectedLocation] = useState(tagFiltersRef.current.location);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-export default function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
-  const [distance, setDistance] = useState(5)
-  const [rating, setRating] = useState(2)
-  const [delivery, setDelivery] = useState(false)
-  const [vegan, setVegan] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
-  const [locations] = useState(["Irvine Spectrum Center", "Newport Beach", "Costa Mesa", "Laguna Beach", "Anaheim"])
-  const [selectedLocation, setSelectedLocation] = useState("Irvine Spectrum Center")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isSearching, setIsSearching] = useState(false)
+  const toggleCategory = (category: string) => {
+    const newCategories = tagFiltersRef.current.category.includes(category)
+      ? tagFiltersRef.current.category.filter(c => c !== category)
+      : [...tagFiltersRef.current.category, category];
+    
+    const newTagFilters = {
+      ...tagFiltersRef.current,
+      category: newCategories
+    };
+    
+    tagFiltersRef.current = newTagFilters;
+    setTagFiltersRef.current(newTagFilters);
+    forceUpdate({}); // Trigger re-render for UI update
+  };
+
+  // Update tagFilters when selectedCategories changes
+  useEffect(() => {
+    setTagFiltersRef.current(tagFiltersRef.current);
+  }, [setTagFiltersRef, tagFiltersRef]);
 
   // Close modal with ESC key
   useEffect(() => {
@@ -62,30 +73,11 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
     "Thai",
   ]
 
-  const toggleCategory = (category: string) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(selectedCategories.filter((c) => c !== category))
-    } else {
-      setSelectedCategories([...selectedCategories, category])
-    }
-  }
-
-  const handleApply = () => {
-    onApply({
-      categories: selectedCategories,
-      distance,
-      rating,
-      delivery,
-      vegan,
-    })
-    onClose()
-  }
-
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 backdrop-blur-sm bg-black/30 pointer-events-auto' : 'opacity-0 backdrop-blur-0 bg-black/0 pointer-events-none'
+      }`}>
+      <div className={`bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto transition-all duration-300 transform ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}>
         <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
           <h2 className="text-2xl font-bold">Customize Filters</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
@@ -113,9 +105,8 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                     {locations.map((location) => (
                       <button
                         key={location}
-                        className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                          location === selectedLocation ? "bg-gray-50 font-medium" : ""
-                        }`}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${location === selectedLocation ? "bg-gray-50 font-medium" : ""
+                          }`}
                         onClick={() => {
                           setSelectedLocation(location)
                           setIsLocationDropdownOpen(false)
@@ -191,7 +182,7 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                       key={category}
                       onClick={() => toggleCategory(category)}
                       className={`px-4 py-2 rounded-full text-sm ${
-                        selectedCategories.includes(category)
+                        tagFiltersRef.current.category.includes(category)
                           ? "bg-black text-white"
                           : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                       }`}
@@ -211,8 +202,16 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                     min="0"
                     max="10"
                     step="0.1"
-                    value={distance}
-                    onChange={(e) => setDistance(Number.parseFloat(e.target.value))}
+                    value={tagFiltersRef.current.distance}
+                    onChange={(e) => {
+                      const newTagFilters = {
+                        ...tagFiltersRef.current,
+                        distance: e.target.value
+                      };
+                      tagFiltersRef.current = newTagFilters;
+                      setTagFiltersRef.current(newTagFilters);
+                      forceUpdate({});
+                    }}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between mt-2 text-sm text-gray-500">
@@ -231,8 +230,16 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                     min="1"
                     max="5"
                     step="1"
-                    value={rating}
-                    onChange={(e) => setRating(Number.parseInt(e.target.value))}
+                    value={tagFiltersRef.current.ratings}
+                    onChange={(e) => {
+                      const newTagFilters = {
+                        ...tagFiltersRef.current,
+                        ratings: Number.parseInt(e.target.value)
+                      };
+                      tagFiltersRef.current = newTagFilters;
+                      setTagFiltersRef.current(newTagFilters);
+                      forceUpdate({});
+                    }}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between mt-2 text-sm">
@@ -278,8 +285,16 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                   <input
                     type="checkbox"
                     id="delivery"
-                    checked={delivery}
-                    onChange={() => setDelivery(!delivery)}
+                    checked={tagFiltersRef.current.delivery}
+                    onChange={() => {
+                      const newTagFilters = {
+                        ...tagFiltersRef.current,
+                        delivery: !tagFiltersRef.current.delivery
+                      };
+                      tagFiltersRef.current = newTagFilters;
+                      setTagFiltersRef.current(newTagFilters);
+                      forceUpdate({});
+                    }}
                     className="w-6 h-6 text-black rounded border-gray-300 focus:ring-black"
                   />
                 </div>
@@ -291,23 +306,21 @@ export default function FilterModal({ isOpen, onClose, onApply }: FilterModalPro
                   <input
                     type="checkbox"
                     id="vegan"
-                    checked={vegan}
-                    onChange={() => setVegan(!vegan)}
+                    checked={tagFiltersRef.current.vegan}
+                    onChange={() => {
+                      const newTagFilters = {
+                        ...tagFiltersRef.current,
+                        vegan: !tagFiltersRef.current.vegan
+                      };
+                      tagFiltersRef.current = newTagFilters;
+                      setTagFiltersRef.current(newTagFilters);
+                      forceUpdate({});
+                    }}
                     className="w-6 h-6 text-black rounded border-gray-300 focus:ring-black"
                   />
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Apply Button */}
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={handleApply}
-              className="px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-            >
-              Apply Filters
-            </button>
           </div>
         </div>
       </div>
