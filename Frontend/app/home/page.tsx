@@ -29,7 +29,6 @@
 //     </div>
 //   )
 // }
-// ✅ This is the updated HomePage.tsx using simplified getRestaurantsFromFilters
 "use client"
 
 import { useState } from "react"
