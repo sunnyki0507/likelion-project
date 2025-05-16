@@ -1,13 +1,55 @@
-import type { FilterState } from "../(components)/FilterModal"
+import type { TagFilters } from "@/types/tags"
+export interface RestaurantInfo {
+  id: string
+  name: string
+  rating: number
+  reviews: number
+  distance: string
+  category: string
+  isOpen: boolean
+  hasOnlineOrder: boolean
+  hasDelivery: boolean
+  takesReservations: boolean
+  image: string
+  likes?: number
+  price?: number
+  attributes?: string[]
+  description?: string
+}
 
-export async function getRestaurantsFromFilters(filter: FilterState, location: string) {
-  const category = filter.categories[0] || ""
-  const pricing = filter.rating.toString()
+interface GetRestaurantsParams extends TagFilters {
+  size?: number
+  skip?: number
+}
 
+export async function getRestaurants({
+  location,
+  category,
+  distance,
+  ratings,
+  //delivery,
+  //vegan,
+  likes,
+  reviews,
+  description,
+  price,
+  sortBy,
+  attributes,
+  size = 10,
+  skip = 0,
+}: GetRestaurantsParams): Promise<RestaurantInfo[]> {
   const params = new URLSearchParams({
-    location,
-    categories: category,
-    pricing,
+    location: location || "92612",
+    limit: size.toString(),
+    //distance,
+    //ratings: ratings.toString(),
+    //delivery: delivery.toString(),
+    //categories: category.join(','),
+    //attributes: attributes?.join(',') ?? '',
+    //price: price?.toString() ?? '',
+    //sort_by: 'best_match',
+    // size: size.toString(),
+    // skip: skip.toString(),
   })
 
   const url = `http://localhost:3000/search?${params.toString()}`
@@ -25,6 +67,7 @@ export async function getRestaurantsFromFilters(filter: FilterState, location: s
 
   return data
 }
+
 
 
 

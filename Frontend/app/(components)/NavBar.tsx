@@ -5,25 +5,31 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import FilterModal from "./FilterModal"
+import { ViewType } from "@/types/view"
+import { TagFilters } from "@/types/tags"
 
-export default function Navbar() {
+export default function Navbar({ changeViewAction, tagFilterState }:
+  { changeViewAction: (view: ViewType) => void, 
+    tagFilterState: [TagFilters, (tagFilters: TagFilters) => void] }) 
+  {
+  const [tagFilters, setTagFilters] = tagFilterState
   const pathname = usePathname()
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
-
+  //const { toggleView } = useView()
+  
+  const handleApplyFilters = (filters: TagFilters) => {
+    setTagFilters(filters)
+    setIsFilterModalOpen(false)
+  }
   const isActive = (path: string) => {
     return pathname === path
-  }
-
-  const handleFilterApply = (filters: any) => {
-    console.log("Applied filters:", filters)
-    // Here you would typically update your app state or make an API call
   }
 
   return (
     <>
       <header className="border-b border-gray-200 w-full">
         <div className="w-full px-4 py-4 flex justify-between items-center max-w-screen-xl mx-auto">
-          <Link href="/home" className="flex items-center">
+          <div className="cursor-pointer flex items-center" onClick={() => changeViewAction("Card")}>
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BAPAGO-logo-wsQQFiikb4EGqWocDpua8LJOvF5fj9.png"
               alt="BAPAGO Logo"
@@ -31,27 +37,30 @@ export default function Navbar() {
               height={40}
               className="h-10 w-auto"
             />
-          </Link>
+          </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/favorites"
-              className={`font-medium ${isActive("/favorites") ? "text-black" : "text-gray-600 hover:text-black"}`}
+            <button
+              onClick={() => changeViewAction("Favorites")}
+              className={`cursor-pointer font-medium ${isActive("/favorites") ? "text-black" : "text-gray-600 hover:text-black"}`}
             >
               Favorites
-            </Link>
+            </button>
+
             <button
               onClick={() => setIsFilterModalOpen(true)}
-              className={`font-medium ${isActive("/customize") ? "text-black" : "text-gray-600 hover:text-black"}`}
+              className={`cursor-pointer font-medium ${isActive("/customize") ? "text-black" : "text-gray-600 hover:text-black"}`}
             >
               Customize
             </button>
+
             <Link
               href="/change-view"
               className={`font-medium ${isActive("/change-view") ? "text-black" : "text-gray-600 hover:text-black"}`}
             >
               Change view
             </Link>
+
             <Link
               href="/profile"
               className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
@@ -80,7 +89,12 @@ export default function Navbar() {
         </div>
       </header>
 
-      <FilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} onApply={handleFilterApply} />
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={handleApplyFilters} // ✅ 추가!
+        initialFilters={tagFilters}  // optional: 초기값 넘겨주기
+      />
     </>
   )
 }

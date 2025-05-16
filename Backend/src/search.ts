@@ -2,20 +2,41 @@ import { Elysia } from 'elysia'
 import axios from 'axios'
 import { config } from 'dotenv'
 import cors from '@elysiajs/cors'
-
 config()
 const YELP_API_KEY = process.env.YELP_API_KEY
 
+function mapSortKey(key: string): string {
+  switch (key) {
+    case 'Ratings':
+      return 'rating'
+    case 'Number of Reviews':
+      return 'review_count'
+    case 'Distance':
+      return 'distance'
+    case 'Best':
+    default:
+      return 'best_match' // default
+  }
+}
 export const searchPlugin = new Elysia()
 .use(cors({
     origin: 'http://localhost:3001'
   }))
 .get('/search', async ({ query, set }) => {
-  const { location, categories, pricing } = query
+  const {
+    location = "92612",
+    categories,
+    distance,
+    price,
+    sortBy = 'best_match',
+    //ratings,
+    //delivery,
+    attributes
+  } = query
 
-  if (!location || !categories || !pricing) {
+  if (!location) {
     set.status = 400
-    return { error: 'location, categories, and pricing are required' }
+    return { error: 'location required' }
   }
 
   try {
@@ -26,15 +47,17 @@ export const searchPlugin = new Elysia()
       params: {
         location,
         term: 'restaurants',
-        categories,
-        price: pricing,
+        //categories,
+        //radius: distance ? Math.floor(parseFloat(distance) * 1000) : undefined,
+        //price,
         limit: 15,
         open_now: true,
-        sort_by: 'review_count'
+        sort_by: mapSortKey(sortBy || 'best_match'),
+        //attributes: Array.isArray(attributes) ? attributes.join(',') : attributes
       }
     })
 
-    return response.data.businesses.map((biz: any) => ({
+    let businesses = response.data.businesses.map((biz: any) => ({
       id: biz.id,
       name: biz.name,
       rating: biz.rating,
@@ -47,8 +70,19 @@ export const searchPlugin = new Elysia()
       takesReservations: false,
       image: biz.image_url,
       likes: 500,
-      description: 'Description about the restaurant',
+      //description: 'Description about the restaurant',
+      attributes: ['hot_and_new', 'reservation'], // 샘플 값
     }))
+
+    // if (ratings) {
+    //   businesses = businesses.filter(r => r.rating >= Number(ratings))
+    // }
+
+    // if (delivery === 'true') {
+    //   businesses = businesses.filter(r => r.hasDelivery)
+    // }
+
+    return businesses
   } catch (error: any) {
     console.error('Yelp API error:', error.response?.data || error.message)
     set.status = 500
