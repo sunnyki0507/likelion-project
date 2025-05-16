@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import CardBox from "./CardBox"
-import { getRestaurants, type RestaurantInfo } from "../(api)/getRestaurants"
-import type { TagFilters as Tags } from "@/types/tags"
+import { RestaurantInfo } from "@/types/restaurant"
+import { getRestaurants } from "@/app/(api)/getRestaurants"
+import { sampleTagFilters, TagFilters } from "@/types/tags"
 
 const cardSetting = {
   w: 870,
@@ -11,21 +12,26 @@ const cardSetting = {
   gap: 300,
 }
 
-const sampleTag: Tags = {
-  location: "irvine",
-  category: "Thai",
-  distance: 5,
-  ratings: 4,
-  delivery: true,
-  vegan: false,
-}
 
-export default function CardBoxHolder({ initRestaurants }: { initRestaurants: RestaurantInfo[] }) {
-  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>(initRestaurants)
+
+export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }) {
+  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [curIndex, setCurIndex] = useState<number>(1)
   const curIndexRef = useRef(curIndex)
   const restaurantsLengthRef = useRef(restaurants.length)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // init fetch
+  useEffect(() => {
+    const fetchInitialRestaurants = async () => {
+      const initialRestaurants = await getRestaurants({ tagFilters: tagFilters, size: 5, skip: 0 })
+      setRestaurants(initialRestaurants)
+      restaurantsLengthRef.current = initialRestaurants.length
+      setIsLoading(false)
+    }
+    fetchInitialRestaurants()
+  }, [])
 
   // capture wheel movement => curIndex++ / curIndex--
   const threshold = 400
@@ -79,8 +85,8 @@ export default function CardBoxHolder({ initRestaurants }: { initRestaurants: Re
 
     //fetch
     if (restaurants.length - 1 <= curIndex) {
-      ;(async () => {
-        const moreRestaurants = await getRestaurants({ tagFilters: sampleTag, size: 5, skip: restaurants.length })
+      (async () => {
+        const moreRestaurants = await getRestaurants({ tagFilters: sampleTagFilters, size: 5, skip: restaurants.length })
         setRestaurants((prev) => {
           const updated = [...prev, ...moreRestaurants]
           restaurantsLengthRef.current = updated.length
@@ -112,11 +118,21 @@ export default function CardBoxHolder({ initRestaurants }: { initRestaurants: Re
           ></div>
         </div>
 
-        {restaurants.map((restaurant) => (
-          <div className="flex-shrink-0" key={restaurant.id}>
-            <CardBox restaurantInfo={restaurant} />
+        {/* loading card / cardbox */}
+        {isLoading ? (
+          <div className="flex-shrink-0">
+            <div 
+              style={{ width: cardSetting.w, height: cardSetting.h }}
+              className="mx-auto bg-gray-100 rounded-3xl mb-6 overflow-hidden animate-pulse"
+            ></div>
           </div>
-        ))}
+        ) : (
+          restaurants.map((restaurant) => (
+            <div className="flex-shrink-0" key={restaurant.id}>
+              <CardBox restaurantInfo={restaurant} />
+            </div>
+          ))
+        )}
 
         {/* empty card at the end */}
         <div className="flex-shrink-0">

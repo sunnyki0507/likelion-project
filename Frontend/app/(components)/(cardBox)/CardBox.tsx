@@ -1,11 +1,11 @@
 "use client"
 
+import { RestaurantInfo } from "@/types/restaurant"
 import { HeartIcon } from "@heroicons/react/24/outline"
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import type { RestaurantInfo } from "../../types/restaurant" // Update this import
 
 export default function CardBox({ restaurantInfo }: { restaurantInfo: RestaurantInfo }) {
   const [isFavorite, setIsFavorite] = useState(false)
