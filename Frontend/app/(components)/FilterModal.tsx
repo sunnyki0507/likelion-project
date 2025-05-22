@@ -4,18 +4,31 @@ import { useState, useEffect, useRef } from "react"
 import { XMarkIcon, ChevronDownIcon, CheckIcon } from "@heroicons/react/24/solid"
 import { ClockIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline"
 import type { TagFilters } from "@/types/tags"
+import LocationSection from "./LocationSection"
+import type { RestaurantInfo } from "../(api)/getRestaurants"
 
 interface FilterModalProps {
   isOpen: boolean
   onClose: () => void
   onApply: (filters: TagFilters) => void
   initialFilters?: TagFilters
+  initialRestaurants?: RestaurantInfo[]
+  defaultLocation?: string // location handling
 }
 
-export default function FilterModal({ isOpen, onClose, onApply, initialFilters }: FilterModalProps) {
-  console.log("FilterModal rendering - v2") // Version indicator
+export default function FilterModal({
+  isOpen,
+  onClose,
+  onApply,
+  initialFilters,
+  initialRestaurants = [],
+  defaultLocation = "Irvine Spectrum Center",
+}: FilterModalProps) {
+  // Initial state for location and restaurants
+  const [selectedLocation, setSelectedLocation] = useState<string>(defaultLocation)
+  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>(initialRestaurants)
 
-  // Use initialFilters if provided, otherwise use defaults
+  //State for filters
   const [distance, setDistance] = useState(initialFilters?.distance ? Number.parseFloat(initialFilters.distance) : 5)
   const [rating, setRating] = useState(initialFilters?.ratings || 0)
   const [price, setPrice] = useState(initialFilters?.price || 2)
@@ -34,6 +47,13 @@ export default function FilterModal({ isOpen, onClose, onApply, initialFilters }
   const [isEnteringPreference, setIsEnteringPreference] = useState(false)
   const [customPreference, setCustomPreference] = useState("")
   const customInputRef = useRef<HTMLInputElement>(null)
+
+  //Handle Server-Side data
+  useEffect(() => {
+    if (initialRestaurants.length > 0) {
+      setRestaurants(initialRestaurants)
+    }
+  }, [initialRestaurants])
 
   // Close modal with ESC key
   useEffect(() => {
@@ -71,6 +91,7 @@ export default function FilterModal({ isOpen, onClose, onApply, initialFilters }
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Entering Preference input focus
   useEffect(() => {
     if (isEnteringPreference && customInputRef.current) {
       customInputRef.current.focus()
@@ -160,13 +181,30 @@ export default function FilterModal({ isOpen, onClose, onApply, initialFilters }
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30">
+    // <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30">
+    //   <div
+    //     className="bg-white rounded-lg overflow-y-auto mt-[92px]"
+    //     style={{
+    //       width: "1121px",
+    //       height: "839px",
+    //       maxHeight: "calc(100vh - 120px)",
+    //     }}
+    //   >
+    // In FilterModal.tsx
+    <div
+      className={`
+  ${isOpen ? "fixed inset-0 bg-black/30 z-50" : "bg-transparent"}
+  flex items-start justify-center
+`}
+    >
       <div
-        className="bg-white rounded-lg overflow-y-auto mt-[92px]"
+        className={`
+        bg-white rounded-lg overflow-y-auto
+        ${isOpen ? "mt-[92px]" : "mt-0 rounded-none"} // Remove rounded corners in page mode
+      `}
         style={{
-          width: "1121px",
-          height: "839px",
-          maxHeight: "calc(100vh - 120px)",
+          width: isOpen ? "1121px" : "100%",
+          height: isOpen ? "839px" : "100vh",
         }}
       >
         {/* Modal header */}
@@ -177,6 +215,14 @@ export default function FilterModal({ isOpen, onClose, onApply, initialFilters }
           </button>
         </div>
 
+        {/* Location and Search Section */}
+        <div className="bg-white rounded-lg w-full">
+          <div className="p-6">
+            <LocationSection selectedLocation={selectedLocation} onLocationChange={setSelectedLocation} />
+          </div>
+        </div>
+
+        {/* Main content */}
         <div className="p-8">
           {/* Two-column layout with table */}
           <table className="w-full border-collapse">

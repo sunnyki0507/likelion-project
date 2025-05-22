@@ -98,7 +98,6 @@ export default function Navbar({ changeViewAction, tagFilterState }:
   { changeViewAction: (view: ViewType) => void, tagFilterState: [TagFilters, (tagFilters: TagFilters) => void] }) {
   const pathname = usePathname()
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
-  const { toggleView } = useView()
 
   const isActive = (path: string) => {
     return pathname === path
