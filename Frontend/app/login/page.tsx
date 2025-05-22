@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { signUp, logIn, initializeDatabase } from "../api/auth"
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [isHidden, setIsHidden] = useState(true)
@@ -11,6 +12,10 @@ export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [gender, setGender] = useState("")
+  const [country, setCountry] = useState("")
+  const [timeZone, setTimeZone] = useState("")
+  const [language, setLanguage] = useState("")
   const [error, setError] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -32,6 +37,8 @@ export default function Login() {
 
 // inside your Login() component (a "use client" file)
 
+const router = useRouter();
+
 const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
   setIsLoading(true);
@@ -49,7 +56,7 @@ const handleLogin = async (e: React.FormEvent) => {
     const resp = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email:email.trim().toLowerCase(), password }),
     });
 
     // 2. If login fails, show the error
@@ -71,6 +78,10 @@ const handleLogin = async (e: React.FormEvent) => {
     // 5. Clear the form
     setEmail("");
     setPassword("");
+    setTimeout(() => {
+      router.push("/home");
+  },2000)
+
   } catch (err) {
     console.error(err);
     setError("An unexpected error occurred");
@@ -98,7 +109,7 @@ const handleLogin = async (e: React.FormEvent) => {
     }
 
     try {
-      const result = await signUp(email, password)
+      const result = await signUp(email.trim().toLowerCase(), password, gender, country, timeZone, language)
 
       if (result.success && result.user) {
         // Store user info in localStorage
@@ -188,6 +199,87 @@ const handleLogin = async (e: React.FormEvent) => {
                   className="w-full mt-1 h-10 p-3 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-light text-gray-500">Gender</label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+              > 
+                <option value="" disabled>Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-light text-gray-500">Country</label>
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+              >
+                <option value="" disabled>Select your country</option>
+                <option value="us">United States</option>
+                <option value="kr">South Korea</option>
+                <option value="jp">Japan</option>
+                <option value="cn">China</option>
+                <option value="ca">Canada</option>
+                <option value="gb">United Kingdom</option>
+                <option value="au">Australia</option>
+                <option value="de">Germany</option>
+                <option value="fr">France</option>
+                <option value="other">Other</option>
+             </select>
+            </div>
+            <div>
+              <label className="block text-xs font-light text-gray-500">Time Zone</label>
+              <select
+                value={timeZone}
+                onChange={(e) => setTimeZone(e.target.value)}
+                className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+              >
+               <option value="" disabled>Select your time zone</option>
+                <option value="PST">Pacific Standard Time (PST)</option>
+                <option value="MST">Mountain Standard Time (MST)</option>
+                <option value="CST">Central Standard Time (CST)</option>
+                <option value="EST">Eastern Standard Time (EST)</option>
+                <option value="GMT">Greenwich Mean Time (GMT)</option>
+                <option value="CET">Central European Time (CET)</option>
+                <option value="IST">India Standard Time (IST)</option>
+                <option value="KST">Korea Standard Time (KST)</option>
+                <option value="JST">Japan Standard Time (JST)</option>
+                <option value="AEST">Australian Eastern Standard Time (AEST)</option>
+                </select>
+            </div>
+            <div>
+              <label className="block text-xs font-light text-gray-500">Language</label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+              >
+              <option value="" disabled>Select your language</option>
+              <option value="en">English</option>
+              <option value="ko">Korean</option>
+              <option value="zh">Chinese (Simplified)</option>
+              <option value="zh-tw">Chinese (Traditional)</option>
+              <option value="ja">Japanese</option>
+              <option value="fr">French</option>
+              <option value="es">Spanish</option>
+              <option value="de">German</option>
+              <option value="hi">Hindi</option>
+              <option value="ar">Arabic</option>
+              <option value="pt">Portuguese</option>
+              <option value="ru">Russian</option>
+              <option value="vi">Vietnamese</option>
+              <option value="th">Thai</option>
+              <option value="tr">Turkish</option>
+              <option value="it">Italian</option>
+            </select>
+          </div>
+
               <button
                 type="submit"
                 disabled={isLoading}
