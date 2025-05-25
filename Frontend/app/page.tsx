@@ -5,5 +5,5 @@ export default function CheckLogin() {
 	//cookie check
 
 	//redirect('/login')
-	redirect('/home')
+	redirect('/login')
 }
