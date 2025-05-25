@@ -5,13 +5,27 @@ import { HeartIcon } from "@heroicons/react/24/outline"
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function CardBox({ restaurantInfo }: { restaurantInfo: RestaurantInfo }) {
   const [isFavorite, setIsFavorite] = useState(false)
   const restaurant = restaurantInfo
 
+  useEffect(()=>{
+    const existing = JSON.parse(localStorage.getItem("favorites")||"[]") as RestaurantInfo[]
+    const found = existing.find((r)=>r.id === restaurant.id)
+    if(found) setIsFavorite(true)
+  }, [restaurant.id])
+
   const toggleFavorite = () => {
+    const existing = JSON.parse(localStorage.getItem("favorites")||"[]") as RestaurantInfo[]
+    if(isFavorite){
+      const updated = existing.filter((r)=>r.id !== restaurant.id)
+      localStorage.setItem("favorites", JSON.stringify(updated))
+    }else{
+      const updated = [...existing, restaurant]
+      localStorage.setItem("favorites", JSON.stringify(updated))
+    }
     setIsFavorite(!isFavorite)
   }
 

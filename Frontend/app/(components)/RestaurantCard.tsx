@@ -1,12 +1,75 @@
 import Image from "next/image"
 import Link from "next/link"
-import { HeartIcon } from "@heroicons/react/24/outline"
+import { HeartIcon as HeartOutlineIcon } from "@heroicons/react/24/outline"
+import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import { RestaurantInfo } from "@/types/restaurant"
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 
-export default function RestaurantCard({ restaurant }: { restaurant: RestaurantInfo }) {
-  return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col">
-      {/* Restaurant Image */}
+type Props = {
+  restaurant: RestaurantInfo
+  onUnfavorite?: (id: string) => void
+  isFavoriteView?: boolean
+}
+
+//export default function RestaurantCard({ restaurant }: { restaurant: RestaurantInfo }) {
+  //return (
+    //<div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col">
+      //{/* Restaurant Image */}
+      //<div className="relative h-48 w-full">
+        //<Image
+          //src={restaurant.image || "/placeholder.svg"}
+          //alt={restaurant.name}
+          //fill
+          //className="object-cover"
+          //priority
+        ///>
+        //<button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md">
+          //<HeartIcon className="w-5 h-5 text-gray-700" />
+        //</button>
+      //</div>
+
+export default function RestaurantCard({ restaurant, onUnfavorite, isFavoriteView = false }: Props) {
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  // ⭐️ Check if this restaurant is a favorite on mount
+  useEffect(() => {
+    const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[]
+    const found = existing.find((r) => r.id === restaurant.id)
+    if (found) setIsFavorite(true)
+  }, [restaurant.id])
+
+  // ⭐️ Toggle favorite and update localStorage
+  const toggleFavorite = () => {
+    const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[]
+
+    if (isFavorite) {
+      const updated = existing.filter((r) => r.id !== restaurant.id)
+      localStorage.setItem("favorites", JSON.stringify(updated))
+      setIsFavorite(false)
+
+      // ✅ If we're in the favorite page, remove it from the list
+      if (isFavoriteView && onUnfavorite) {
+        onUnfavorite(restaurant.id)
+      }
+    } else {
+      const updated = [...existing, restaurant]
+      localStorage.setItem("favorites", JSON.stringify(updated))
+      setIsFavorite(true)
+    }
+  }
+
+
+   return (
+    <motion.div
+      className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.25 }}
+      layout
+    >
+      {/* Image Section */}
       <div className="relative h-48 w-full">
         <Image
           src={restaurant.image || "/placeholder.svg"}
@@ -15,12 +78,19 @@ export default function RestaurantCard({ restaurant }: { restaurant: RestaurantI
           className="object-cover"
           priority
         />
-        <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md">
-          <HeartIcon className="w-5 h-5 text-gray-700" />
+        <button
+          onClick={toggleFavorite}
+          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md"
+        >
+          {isFavorite ? (
+            <HeartSolidIcon className="w-5 h-5 text-red-500" />
+          ) : (
+            <HeartOutlineIcon className="w-5 h-5 text-gray-700" />
+          )}
         </button>
       </div>
 
-      {/* Restaurant Info */}
+      {/* Info Section */}
       <div className="p-5 flex-grow flex flex-col">
         <h2 className="text-xl font-bold mb-2">{restaurant.name}</h2>
 
@@ -43,7 +113,9 @@ export default function RestaurantCard({ restaurant }: { restaurant: RestaurantI
           <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">
             {restaurant.isOpen ? "Open Now" : "Closed"}
           </span>
-          {restaurant.hasDelivery && <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">Delivery</span>}
+          {restaurant.hasDelivery && (
+            <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">Delivery</span>
+          )}
           {restaurant.takesReservations && (
             <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">Reservations</span>
           )}
@@ -56,6 +128,6 @@ export default function RestaurantCard({ restaurant }: { restaurant: RestaurantI
           View Details
         </Link>
       </div>
-    </div>
+    </motion.div>
   )
 }

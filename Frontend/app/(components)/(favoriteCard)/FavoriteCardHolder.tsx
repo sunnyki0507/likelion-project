@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getRestaurants } from "../../(api)/getRestaurants"
+//import { getRestaurants } from "../../(api)/getRestaurants"
 import RestaurantCard from "../RestaurantCard"
-import type { TagFilters } from "../../../types/tags"
+//import type { TagFilters } from "../../../types/tags"
 import type { RestaurantInfo } from "@/types/restaurant"
+import { AnimatePresence } from "framer-motion"
 
-const sampleTagFilters: TagFilters = {
+/*const sampleTagFilters: TagFilters = {
   location: "irvine",
   category: "",
   distance: "10km",
@@ -16,26 +17,30 @@ const sampleTagFilters: TagFilters = {
   likes: 0,
   reviews: 0,
   description: "",
-}
+}*/
 
 export default function FavoriteCardHolder() {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const loadRestaurants = async () => {
-      try {
-        const data = await getRestaurants({ tagFilters: sampleTagFilters, size: 10 })
-        setRestaurants(data)
-      } catch (error) {
-        console.error("Failed to load restaurants:", error)
-      } finally {
-        setIsLoading(false)
+    const loadFavorites = async () => {
+      const stored = localStorage.getItem("favorites")
+      if(stored){
+        setRestaurants(JSON.parse(stored))
       }
+      setIsLoading(false)
     }
 
-    loadRestaurants()
+    loadFavorites()
   }, [])
+
+  //  Function to remove favorite and update localStorage
+  const removeFavorite = (id: string) => {
+    const updated = restaurants.filter((r) => r.id !== id)
+    setRestaurants(updated)
+    localStorage.setItem("favorites", JSON.stringify(updated))
+  }
 
   return (
     <div className="w-full px-4 py-8 max-w-screen-xl mx-auto">
@@ -48,9 +53,16 @@ export default function FavoriteCardHolder() {
             <div key={i} className="animate-pulse bg-gray-200 rounded-lg h-64"></div>
           ))
         ) : (
-          restaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-          ))
+          <AnimatePresence mode="popLayout">
+            {restaurants.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              onUnfavorite={removeFavorite}
+              isFavoriteView={true}
+          />
+        ))}
+          </AnimatePresence>
         )}
       </div>
     </div>

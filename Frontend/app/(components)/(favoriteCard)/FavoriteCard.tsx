@@ -11,7 +11,13 @@ export default function FavoriteCard({ restaurant }: { restaurant: RestaurantInf
   const [isFavorite, setIsFavorite] = useState(true)
 
   const toggleFavorite = () => {
-    setIsFavorite(!isFavorite)
+    const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[]
+    const updated = existing.filter((r) => r.id !== restaurant.id)
+    localStorage.setItem("favorites", JSON.stringify(updated))
+    setIsFavorite(false)
+
+    // Quick refresh to reflect changes
+    window.location.reload()
   }
 
   return (
