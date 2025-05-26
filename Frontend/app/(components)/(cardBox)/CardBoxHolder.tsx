@@ -5,6 +5,7 @@ import CardBox from "./CardBox"
 import { RestaurantInfo } from "@/types/restaurant"
 import { getRestaurants } from "@/app/(api)/getRestaurants"
 import { sampleTagFilters, TagFilters } from "@/types/tags"
+import CardBoxInfoPanel from "./CardBoxInfoPanel"
 
 const cardSetting = {
   w: 870,
@@ -21,6 +22,7 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
   const curIndexRef = useRef(curIndex)
   const restaurantsLengthRef = useRef(restaurants.length)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [infoBoxRestaurant, setInfoBoxRestaurant] = useState<RestaurantInfo | null>(null)
 
   // init fetch
   useEffect(() => {
@@ -129,7 +131,12 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
         ) : (
           restaurants.map((restaurant) => (
             <div className="flex-shrink-0" key={restaurant.id}>
-              <CardBox restaurantInfo={restaurant} />
+              <CardBox 
+                restaurantInfo={restaurant} 
+                onViewMore={() => setInfoBoxRestaurant(restaurant)}
+                infoPanelOpen={infoBoxRestaurant?.id === restaurant.id}
+                onCloseInfo={() => setInfoBoxRestaurant(null)}
+              />
             </div>
           ))
         )}

@@ -559,18 +559,6 @@ export default function FilterModal({
     return () => window.removeEventListener("keydown", handleEsc)
   }, [onClose])
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "auto"
-    }
-    return () => {
-      document.body.style.overflow = "auto"
-    }
-  }, [isOpen])
-
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -702,6 +690,7 @@ export default function FilterModal({
           height: isOpen ? "839px" : "100vh",
           maxHeight: isOpen ? "calc(100vh - 120px)" : "none",
         }}
+        onWheel={e => e.stopPropagation()}
       >
         {/* Modal header */}
         <div className="sticky top-0 bg-white p-4 flex justify-between items-center z-10">

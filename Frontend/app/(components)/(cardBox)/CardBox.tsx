@@ -6,10 +6,47 @@ import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import CardBoxInfoPanel from "./CardBoxInfoPanel"
 
-export default function CardBox({ restaurantInfo }: { restaurantInfo: RestaurantInfo }) {
+interface CardBoxProps {
+  restaurantInfo: RestaurantInfo
+  onViewMore: () => void
+  infoPanelOpen: boolean
+  onCloseInfo: () => void
+}
+
+export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onCloseInfo }: CardBoxProps) {
   const [isFavorite, setIsFavorite] = useState(false)
   const restaurant = restaurantInfo
+
+  // Dummy data for menus, images, and reviews (replace with real data as needed)
+  const menus = [
+    { name: "Menu Name", img: "/images/sample-menu.jpg" },
+    { name: "Menu Name", img: "/images/sample-menu.jpg" },
+    { name: "Menu Name", img: "/images/sample-menu.jpg" },
+  ]
+  const images = [
+    "/images/sample-menu.jpg",
+    "/images/sample-menu.jpg",
+    "/images/sample-menu.jpg",
+    "/images/sample-menu.jpg",
+    "/images/sample-menu.jpg",
+    "/images/sample-menu.jpg",
+  ]
+  const reviews = [
+    {
+      user: "John D.",
+      rating: 4,
+      text:
+        "Nice burgers but they don't look like the pictures on the website! I had the teriyaki char burger and enjoyed the flavors but couldn't taste teriyaki. My girlfriend had the garden salad without tomato and said it was worth every penny ($3) we also had sweet potato fries which was good not incredible or anything. They sadly forgot to put one extra side of sauce in our bag since we ordered online. Willing to try it again!",
+    },
+    {
+      user: "John D.",
+      rating: 4,
+      text:
+        "Nice burgers but they don't look like the pictures on the website! I had the teriyaki char burger and enjoyed the flavors but couldn't taste teriyaki. My girlfriend had the garden salad without tomato and said it was worth every penny ($3) we also had sweet potato fries which was good not incredible or anything. They sadly forgot to put one extra side of sauce in our bag since we ordered online. Willing to try it again!",
+    },
+  ]
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite)
@@ -58,29 +95,58 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
 
           <p className="text-gray-600">{restaurant.description || "Description about the restaurant"}</p>
 
-          <button className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2">
-            View More...
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M5 12H19M19 12L12 5M19 12L12 19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          {infoPanelOpen ? (
+            <button
+              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
+              onClick={onCloseInfo}
+            >
+              Close Info
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M19 12H5M5 12L12 5M5 12L12 19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
+              onClick={onViewMore}
+            >
+              View More
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M5 12H19M19 12L12 5M19 12L12 19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
-        {/* Right Image */}
-        <div className="relative w-[500px] aspect-square">
-          <Image
-            src={restaurant.image || "/placeholder.svg?height=500&width=500&query=restaurant"}
-            alt={restaurant.name}
-            fill
-            className="object-cover"
-            priority
-          />
+        {/* Right Side: Image or Info Box */}
+        <div className="relative w-[500px] aspect-square bg-gray-50">
+          {infoPanelOpen ? (
+            <CardBoxInfoPanel
+              restaurant={restaurant}
+              onWheel={e => e.stopPropagation()}
+              className="absolute inset-0"
+            />
+          ) : (
+            <Image
+              src={restaurant.image || "/placeholder.svg?height=500&width=500&query=restaurant"}
+              alt={restaurant.name}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
           <button
             onClick={toggleFavorite}
             className="absolute top-4 right-4 p-3 hover:bg-gray-100/90 rounded-full bg-white shadow-md"
