@@ -8,6 +8,7 @@ import { ViewType } from "@/types/view"
 import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolder"
 import { TagFilters, sampleTagFilters } from "@/types/tags"
 import Profile from "../(components)/(profile)/Profile"
+import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
 
 
 
@@ -31,6 +32,8 @@ export default function Home() {
 					<CardBoxHolder tagFilters={tagFilters} />
 				) : currentView === 'Profile' ? (
 					<Profile />
+				) : currentView === 'List' ? (
+					<ListBoxHolder tagFilters={tagFilters} />
 				) : (
 					<></>
 				)}
