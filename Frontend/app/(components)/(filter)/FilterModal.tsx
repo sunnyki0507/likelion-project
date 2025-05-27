@@ -500,7 +500,7 @@ import { XMarkIcon, ChevronDownIcon, CheckIcon } from "@heroicons/react/24/solid
 import { ClockIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline"
 import type { TagFilters } from "@/types/tags"
 import LocationSection from "./LocationSection"
-import type { RestaurantInfo } from "../(api)/getRestaurants"
+import type { RestaurantInfo } from "../../(api)/getRestaurants"
 
 interface FilterModalProps {
   isOpen: boolean
