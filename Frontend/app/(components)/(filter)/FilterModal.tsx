@@ -514,8 +514,8 @@ interface FilterModalProps {
 export default function FilterModal({
   isOpen,
   onClose,
-  onApply,
-  initialFilters,
+  onApply, // filter state action
+  initialFilters, // filter state
   initialRestaurants = [],
   defaultLocation = "Irvine Spectrum Center",
 }: FilterModalProps) {
@@ -558,18 +558,6 @@ export default function FilterModal({
     window.addEventListener("keydown", handleEsc)
     return () => window.removeEventListener("keydown", handleEsc)
   }, [onClose])
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "auto"
-    }
-    return () => {
-      document.body.style.overflow = "auto"
-    }
-  }, [isOpen])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -694,7 +682,7 @@ export default function FilterModal({
     >
       <div
         className={`
-        bg-white rounded-lg overflow-y-auto
+        bg-white opacity-95 rounded-lg overflow-y-auto m-10
         ${isOpen ? "mt-[92px]" : "mt-0 rounded-none"} // Remove rounded corners in page mode
       `}
         style={{
@@ -702,9 +690,10 @@ export default function FilterModal({
           height: isOpen ? "839px" : "100vh",
           maxHeight: isOpen ? "calc(100vh - 120px)" : "none",
         }}
+        onWheel={e => e.stopPropagation()}
       >
         {/* Modal header */}
-        <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center z-10">
+        <div className="sticky top-0 bg-white p-4 flex justify-between items-center z-10">
           <h2 className="text-3xl font-bold">Customize Filters</h2>
           {isOpen && (
             <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">

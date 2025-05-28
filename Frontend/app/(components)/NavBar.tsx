@@ -139,12 +139,12 @@ export default function Navbar({ changeViewAction, tagFilterState }:
               Change view
             </Link>
 
-            <Link
-              href="/profile"
+            <button
+              onClick={() => changeViewAction("Profile")}
               className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
             >
               Profile
-            </Link>
+            </button>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -169,7 +169,8 @@ export default function Navbar({ changeViewAction, tagFilterState }:
 
       <FilterModal isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        tagFilterState={tagFilterState}
+        onApply={tagFilterState[1]}
+        initialFilters={tagFilterState[0]}
       />
     </>
   )
