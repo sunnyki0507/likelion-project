@@ -57,11 +57,6 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
       <div className="flex flex-row">
         {/* Left Content */}
         <div className="flex-1 p-8 space-y-6">
-          {/* Likes Counter */}
-          <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm border">
-            <HeartIcon className="w-4 h-4 text-red-700" />
-            <span>{restaurant.likes}</span>
-          </div>
 
           <h2 className="text-4xl font-bold">{restaurant.name}</h2>
 
