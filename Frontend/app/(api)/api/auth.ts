@@ -32,6 +32,34 @@ export async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+      await connection.query(`
+      CREATE TABLE IF NOT EXISTS restaurants (
+        id VARCHAR(255) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        rating FLOAT,
+        reviews INT,
+        distance VARCHAR(50),
+        category VARCHAR(100),
+        isOpen BOOLEAN,
+        hasOnlineOrder BOOLEAN,
+        hasDelivery BOOLEAN,
+        takesReservations BOOLEAN,
+        image TEXT,
+        likes INT DEFAULT 0,
+        description TEXT
+      )
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS favorites (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        restaurant_id VARCHAR(255) NOT NULL,
+        UNIQUE(user_id, restaurant_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
+      )
+    `);
 
     connection.release()
     console.log("Database initialized successfully")

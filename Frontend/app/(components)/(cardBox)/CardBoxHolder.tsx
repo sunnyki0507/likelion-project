@@ -127,8 +127,8 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
             ></div>
           </div>
         ) : (
-          restaurants.map((restaurant) => (
-            <div className="flex-shrink-0" key={restaurant.id}>
+          restaurants.map((restaurant, index) => (
+            <div className="flex-shrink-0" key={`${restaurant.id}-${index}`}>
               <CardBox restaurantInfo={restaurant} />
             </div>
           ))

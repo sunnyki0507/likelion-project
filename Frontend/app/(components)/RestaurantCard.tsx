@@ -5,12 +5,15 @@ import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import { RestaurantInfo } from "@/types/restaurant"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { getUserFromToken } from "@/utils/auth";
 
 type Props = {
   restaurant: RestaurantInfo
   onUnfavorite?: (id: string) => void
   isFavoriteView?: boolean
 }
+
+
 
 //export default function RestaurantCard({ restaurant }: { restaurant: RestaurantInfo }) {
   //return (
@@ -30,34 +33,83 @@ type Props = {
       //</div>
 
 export default function RestaurantCard({ restaurant, onUnfavorite, isFavoriteView = false }: Props) {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  // ⭐️ Check if this restaurant is a favorite on mount
+  // Function to check favorite status
+  const checkFavoriteStatus = () => {
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    const isInFavorites = favorites.some((fav: RestaurantInfo) => fav.id === restaurant.id);
+    setIsFavorite(isInFavorites);
+  };
+
   useEffect(() => {
-    const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[]
-    const found = existing.find((r) => r.id === restaurant.id)
-    if (found) setIsFavorite(true)
-  }, [restaurant.id])
+    const checkFavoriteStatus = async () => {
+      const user = await getUserFromToken();
+  
+      if (user) {
+        try {
+          const res = await fetch(`/api/fetchFavorites?userId=${user.id}`);
+          const data = await res.json();
+          const isFavorited = data.favorites?.some((fav: RestaurantInfo) => String(fav.id) === String(restaurant.id));
+          setIsFavorite(isFavorited);
+        } catch (err) {
+          console.error("Error checking favorite status from DB:", err);
+        }
+      } else {
+        const stored = JSON.parse(localStorage.getItem("favorites") || "[]");
+        const isInFavorites = stored.some((fav: RestaurantInfo) => String(fav.id) === String(restaurant.id));
+        setIsFavorite(isInFavorites);
+      }
+    };
+  
+    checkFavoriteStatus();
+  }, [restaurant.id]);
+  
 
-  // ⭐️ Toggle favorite and update localStorage
-  const toggleFavorite = () => {
-    const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[]
+  const toggleFavorite = async () => {
+    const user = await getUserFromToken();
+    if (user) {
+      try {
+        const method = isFavorite ? "DELETE" : "POST";
+        const response = await fetch("/api/favorites", {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            restaurant,
+            restaurantId: restaurant.id,
+          }),
+        });
 
-    if (isFavorite) {
-      const updated = existing.filter((r) => r.id !== restaurant.id)
-      localStorage.setItem("favorites", JSON.stringify(updated))
-      setIsFavorite(false)
-
-      // ✅ If we're in the favorite page, remove it from the list
-      if (isFavoriteView && onUnfavorite) {
-        onUnfavorite(restaurant.id)
+        const data = await response.json();
+        if (data.success) {
+          setIsFavorite(!isFavorite);
+          if (onUnfavorite) {
+            onUnfavorite(restaurant.id);
+          }
+        }
+      } catch (error) {
+        console.error("Error updating favorite:", error);
       }
     } else {
-      const updated = [...existing, restaurant]
-      localStorage.setItem("favorites", JSON.stringify(updated))
-      setIsFavorite(true)
+      // For guest mode, update localStorage
+      const existing: RestaurantInfo[] = JSON.parse(localStorage.getItem("favorites") || "[]");
+      const isAlreadyFavorite = existing.some(r => r.id === restaurant.id);
+      
+      if (isAlreadyFavorite) {
+        // If it's already a favorite, remove it
+        const updatedFavorites = existing.filter(r => r.id !== restaurant.id);
+        localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+      } else {
+        // If it's not a favorite, add it
+        localStorage.setItem("favorites", JSON.stringify([...existing, restaurant]));
+      }
+      setIsFavorite(!isFavorite);
+      if (onUnfavorite) {
+        onUnfavorite(restaurant.id);
+      }
     }
-  }
+  };
 
 
    return (

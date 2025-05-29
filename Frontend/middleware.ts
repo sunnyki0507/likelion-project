@@ -5,7 +5,14 @@ import { jwtVerify } from "jose"
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
 
 export async function middleware(req: NextRequest) {
+  const url = new URL(req.url, `http://${req.headers.get("host")}`)
+
   console.log("✅ middleware is running")
+
+  if (url.searchParams.get("guest") === "true") {
+    console.log("👤 Skipping token check for guest")
+    return NextResponse.next()
+  }
 
   const token = req.cookies.get("token")?.value
 

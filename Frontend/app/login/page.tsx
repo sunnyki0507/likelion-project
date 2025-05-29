@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { signUp, logIn, initializeDatabase } from "../(api)/api/auth"
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation"
 
 export default function Login() {
   const [isHidden, setIsHidden] = useState(true)
@@ -21,10 +22,12 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState<{ id: number; email: string } | null>(null)
 
-  // Initialize the database on component mount
   useEffect(() => {
+    const guest = searchParams.get("guest") === "true"
+    if (guest) return
+
     initializeDatabase()
-    // hit our “who-ami” route
+    // hit our "who-ami" route
     fetch("/api/me", { cache: "no-store", credentials: "include"})
       .then(r => r.json())
       .then(data => {
@@ -35,64 +38,85 @@ export default function Login() {
       })
   }, [])
 
-// inside your Login() component (a "use client" file)
+  const router = useRouter();
+  const searchParams = useSearchParams()
 
-const router = useRouter();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError("");
-
-  // Basic validation
-  if (!email || !password) {
-    setError("Please fill in both email and password");
-    setIsLoading(false);
-    return;
-  }
-
-  try {
-    // 1. Send credentials to your Next.js API route
-    const resp = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email:email.trim().toLowerCase(), password }),
-      credentials: "include",
-    });
-
-    if (!resp.ok) {
-      try {
-      const { error } = await resp.json()
-      setError(error || "Login failed")
-    } catch {
-      setError("Unexpected server error")
+    // Basic validation
+    if (!email || !password) {
+      setError("Please fill in both email and password");
+      setIsLoading(false);
+      return;
     }
-      setIsLoading(false)
-      return
-}
-    // 3. On success, the API returns { user: { id, email } } 
-    //    (and sets an HttpOnly cookie “token” under the hood)
-    const { user } = await resp.json();
 
-    // 4. Update your UI state
-    setIsLoggedIn(true);
-    setUserData(user);
+    try {
+      // 1. Send credentials to your Next.js API route
+      const resp = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email:email.trim().toLowerCase(), password }),
+        credentials: "include",
+      });
 
-    // 5. Clear the form
-    setEmail("");
-    setPassword("");
-    setTimeout(() => {
-      router.push("/home");
-  },2000)
+      if (!resp.ok) {
+        try {
+          const { error } = await resp.json()
+          setError(error || "Login failed")
+        } catch {
+          setError("Unexpected server error")
+        }
+        setIsLoading(false)
+        return
+      }
 
-  } catch (err) {
-    console.error(err);
-    setError("An unexpected error occurred");
-  } finally {
-    setIsLoading(false);
-  }
-};
+      // 3. On success, the API returns { user: { id, email } } 
+      const { user } = await resp.json();
 
+      // Check for guest favorites and merge them
+      const guestFavorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      if (guestFavorites.length > 0) {
+        try {
+          // Add each guest favorite to the user's favorites
+          for (const restaurant of guestFavorites) {
+            await fetch("/api/favorites", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: user.id,
+                restaurant,
+                restaurantId: restaurant.id,
+              }),
+            });
+          }
+          // Clear guest favorites after merging
+          localStorage.removeItem("favorites");
+        } catch (error) {
+          console.error("Error merging favorites:", error);
+        }
+      }
+
+      // 4. Update your UI state
+      setIsLoggedIn(true);
+      setUserData(user);
+
+      // 5. Clear the form
+      setEmail("");
+      setPassword("");
+      setTimeout(() => {
+        router.push("/home");
+      }, 2000)
+
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -139,6 +163,16 @@ const handleLogin = async (e: React.FormEvent) => {
     setIsLoggedIn(false)
     setUserData(null)
   }
+
+  useEffect(() => {
+    if (isLoggedIn && userData) {
+      const timer = setTimeout(() => {
+        window.location.href = '/home';
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn, userData]);
 
   if (isLoggedIn && userData) {
     return (
@@ -376,7 +410,7 @@ const handleLogin = async (e: React.FormEvent) => {
               >
                 Create an account
               </button>
-              <div className="cursor-pointer font-light text-xs text-neutral-400 mt-2">Continue as guest</div>
+              <div className="cursor-pointer font-light text-xs text-neutral-400 mt-2"  onClick={() => router.push("/home?guest=true")}>Continue as guest</div>
             </div>
           </div>
 

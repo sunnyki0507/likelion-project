@@ -6,6 +6,7 @@ import RestaurantCard from "../RestaurantCard"
 //import type { TagFilters } from "../../../types/tags"
 import type { RestaurantInfo } from "@/types/restaurant"
 import { AnimatePresence } from "framer-motion"
+import { getUserFromToken } from "@/utils/auth"
 
 /*const sampleTagFilters: TagFilters = {
   location: "irvine",
@@ -23,17 +24,21 @@ export default function FavoriteCardHolder() {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const loadFavorites = async () => {
-      const stored = localStorage.getItem("favorites")
-      if(stored){
-        setRestaurants(JSON.parse(stored))
-      }
-      setIsLoading(false)
+useEffect(() => {
+  const loadFavorites = async () => {
+    const user = await getUserFromToken();
+    if (user) {
+      const res = await fetch(`/api/fetchFavorites?userId=${user.id}`);
+      const data = await res.json();
+      setRestaurants(data.favorites);
+    } else {
+      const stored = localStorage.getItem("favorites");
+      if (stored) setRestaurants(JSON.parse(stored));
     }
-
-    loadFavorites()
-  }, [])
+    setIsLoading(false);
+  };
+  loadFavorites();
+}, []);
 
   //  Function to remove favorite and update localStorage
   const removeFavorite = (id: string) => {

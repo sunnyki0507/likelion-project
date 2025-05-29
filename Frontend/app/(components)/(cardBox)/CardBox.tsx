@@ -3,6 +3,7 @@
 import { RestaurantInfo } from "@/types/restaurant"
 import { HeartIcon } from "@heroicons/react/24/outline"
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
+import { getUserFromToken } from "@/utils/auth";
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -11,23 +12,79 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
   const [isFavorite, setIsFavorite] = useState(false)
   const restaurant = restaurantInfo
 
-  useEffect(()=>{
-    const existing = JSON.parse(localStorage.getItem("favorites")||"[]") as RestaurantInfo[]
-    const found = existing.find((r)=>r.id === restaurant.id)
-    if(found) setIsFavorite(true)
-  }, [restaurant.id])
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const user = await getUserFromToken();
+  
+      if (user) {
+        try {
+          const res = await fetch(`/api/fetchFavorites?userId=${user.id}`);
+          const data = await res.json();
+  
+          const isFavorited = data.favorites?.some((fav: RestaurantInfo) => String(fav.id) === String(restaurant.id));
+          setIsFavorite(isFavorited);
+        } catch (err) {
+          console.error("Error fetching favorites from DB:", err);
+          setIsFavorite(false);
+        }
+      } else {
+        const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[];
+        const isFavorited = existing.some((r) => String(r.id) === String(restaurant.id));
+        setIsFavorite(isFavorited);
+      }
+    };
+  
+    checkFavorite();
+  }, [restaurant.id]);
 
-  const toggleFavorite = () => {
-    const existing = JSON.parse(localStorage.getItem("favorites")||"[]") as RestaurantInfo[]
-    if(isFavorite){
-      const updated = existing.filter((r)=>r.id !== restaurant.id)
-      localStorage.setItem("favorites", JSON.stringify(updated))
-    }else{
-      const updated = [...existing, restaurant]
-      localStorage.setItem("favorites", JSON.stringify(updated))
+
+const toggleFavorite = async () => {
+  const user = await getUserFromToken();
+  console.log("Current user:", user);
+
+  if (user) {
+    try {
+      const method = isFavorite ? "DELETE" : "POST";
+      console.log("Making API request:", {
+        method,
+        userId: user.id,
+        restaurant,
+        restaurantId: restaurant.id
+      });
+
+      const response = await fetch("/api/favorites", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          restaurant,
+          restaurantId: restaurant.id,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API response:", data);
+      
+      if (data.success) {
+        setIsFavorite(!isFavorite);
+      } else {
+        console.error("Failed to update favorite:", data.error);
+      }
+    } catch (error) {
+      console.error("Error updating favorite:", error);
     }
-    setIsFavorite(!isFavorite)
+  } else {
+    const existing: RestaurantInfo[] = JSON.parse(localStorage.getItem("favorites") || "[]");
+    // Check if restaurant already exists in favorites
+    const isAlreadyFavorite = existing.some(r => r.id === restaurant.id);
+    
+    if (!isAlreadyFavorite) {
+      // If it's not a favorite, add it
+      localStorage.setItem("favorites", JSON.stringify([...existing, restaurant]));
+    }
+    setIsFavorite(!isFavorite);
   }
+};
 
   return (
     <div className="w-[870px] h-[500px] mx-auto bg-white rounded-3xl shadow-lg mb-6 overflow-hidden">
