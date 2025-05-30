@@ -158,10 +158,23 @@ export default function Login() {
     setIsLoading(false)
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Clear localStorage
     localStorage.removeItem("user")
+    
+    // Clear the JWT token cookie by making a request to the logout endpoint
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+    
     setIsLoggedIn(false)
     setUserData(null)
+    router.push("/login")
   }
 
   useEffect(() => {
