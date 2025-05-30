@@ -9,11 +9,13 @@ import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolde
 import { TagFilters, sampleTagFilters } from "@/types/tags"
 import Profile from "../(components)/(profile)/Profile"
 import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
+import { RestaurantInfo } from "@/types/restaurant"
 
 
 
 export default function Home() {
 	const [currentView, changeView] = useState<ViewType>('Card');
+	const [favoriteRestaurants, setFavoriteRestaurants] = useState<RestaurantInfo[]>([]);
 
     const tagFilterState = useState<TagFilters>(sampleTagFilters);
     const [tagFilters, setTagFilters] = tagFilterState;
@@ -25,11 +27,12 @@ export default function Home() {
 			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
 
 			{/* main */}
+			{currentView}
 			<main className="flex-1 overflow-y-auto">
 				{currentView === 'Favorites' ? (
 					<FavoriteCardHolder />
 				) : currentView === 'Card' ? (
-					<CardBoxHolder tagFilters={tagFilters} />
+					<CardBoxHolder tagFilters={tagFilters}/>
 				) : currentView === 'Profile' ? (
 					<Profile />
 				) : currentView === 'List' ? (

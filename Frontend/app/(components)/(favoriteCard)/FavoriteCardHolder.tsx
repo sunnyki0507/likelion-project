@@ -1,57 +1,30 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getRestaurants } from "../../(api)/getRestaurants"
-import RestaurantCard from "../RestaurantCard"
-import type { TagFilters } from "../../../types/tags"
+import FavoriteCard from "./FavoriteCard"
 import type { RestaurantInfo } from "@/types/restaurant"
 import FavoriteCardInfoPanel from "./FavoriteCardInfoPanel"
-
-const sampleTagFilters: TagFilters = {
-  location: "irvine",
-  category: [],
-  distance: "10km",
-  ratings: 0,
-  delivery: false,
-  vegan: false,
-  likes: 0,
-  reviews: 0,
-  description: "",
-}
+import { getFavoriteRestaurants } from "./SaveFavorite"
 
 export default function FavoriteCardHolder() {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [infoRestaurant, setInfoRestaurant] = useState<RestaurantInfo | null>(null)
 
   useEffect(() => {
-    const loadRestaurants = async () => {
-      try {
-        const data = await getRestaurants({ tagFilters: sampleTagFilters, size: 10 })
-        setRestaurants(data)
-      } catch (error) {
-        console.error("Failed to load restaurants:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadRestaurants()
-  }, [])
+    const favorites = getFavoriteRestaurants();
+    setRestaurants(favorites);
+  }, []);
 
   return (
     <>
       <div className="w-full h-full overflow-y-auto flex flex-col px-4 py-8 max-w-screen-xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Favorites</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            // Show loading skeleton
-            [...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-gray-200 rounded-lg h-64"></div>
-            ))
+          {restaurants.length === 0 ? (
+            <div className="col-span-full text-center text-gray-500">No favorite restaurants yet</div>
           ) : (
             restaurants.map((restaurant) => (
-              <RestaurantCard
+              <FavoriteCard
                 key={restaurant.id}
                 restaurant={restaurant}
                 onViewDetails={() => setInfoRestaurant(restaurant)}

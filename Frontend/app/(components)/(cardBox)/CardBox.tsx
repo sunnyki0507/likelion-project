@@ -5,8 +5,9 @@ import { HeartIcon } from "@heroicons/react/24/outline"
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import CardBoxInfoPanel from "./CardBoxInfoPanel"
+import { saveFavoriteRestaurant, deleteFavoriteRestaurant, getFavoriteRestaurants } from "../(favoriteCard)/SaveFavorite"
 
 interface CardBoxProps {
   restaurantInfo: RestaurantInfo
@@ -18,6 +19,12 @@ interface CardBoxProps {
 export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onCloseInfo }: CardBoxProps) {
   const [isFavorite, setIsFavorite] = useState(false)
   const restaurant = restaurantInfo
+
+  // Check if restaurant is in favorites on component mount
+  useEffect(() => {
+    const favorites = getFavoriteRestaurants();
+    setIsFavorite(favorites.some(fav => fav.id === restaurant.id));
+  }, [restaurant.id]);
 
   // Dummy data for menus, images, and reviews (replace with real data as needed)
   const menus = [
@@ -49,7 +56,12 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
   ]
 
   const toggleFavorite = () => {
-    setIsFavorite(!isFavorite)
+    if (!isFavorite) {
+      saveFavoriteRestaurant(restaurant);
+    } else {
+      deleteFavoriteRestaurant(restaurant.id);
+    }
+    setIsFavorite(!isFavorite);
   }
 
   return (
