@@ -141,7 +141,14 @@ export default function Navbar({ changeViewAction, tagFilterState }:
               Change view
             </Link>
 
-            {!isGuest && (
+            {isGuest ? (
+              <Link
+                href="/login"
+                className="font-medium text-gray-600 hover:text-black"
+              >
+                Login
+              </Link>
+            ) : (
               <button
                 onClick={() => changeViewAction("Profile")}
                 className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
