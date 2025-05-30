@@ -31,21 +31,6 @@ export default function FilterPage({ initialRestaurants }: FilterPageProps) {
   const sortDropdownRef = useRef<HTMLDivElement>(null)
   const attributesDropdownRef = useRef<HTMLDivElement>(null)
 
-  // front and back mapping func
-  function mapAttributes(userFriendly: string[]): string[] {
-    const mapping: Record<string, string> = {
-      "Hot & New": "hot_and_new",
-      "Open for Reservation": "reservation",
-      "Waitlist Reservation": "waitlist_reservation",
-      "Gender Neutral Restrooms": "gender_neutral_restrooms",
-      "Open To All": "open_to_all",
-      "Wheelchair Accessible": "wheelchair_accessible",
-    }
-  
-    return userFriendly
-      .map(attr => mapping[attr])
-      .filter((val): val is string => Boolean(val)) // remove undefined values
-  }
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,17 +55,17 @@ export default function FilterPage({ initialRestaurants }: FilterPageProps) {
         distance: distance.toString(),
         ratings: rating,
         //delivery: selectedAttributes.includes("Available for delivery"),
-        //vegan: false,
-        likes: 0,
-        reviews: 0,
-        description: "",
+       // vegan: false,
+        //likes: 0,
+        //reviews: 0,
+        //description: "",
         price,
         sortBy,
-        attributes: mapAttributes(selectedAttributes),
+        attributes: selectedAttributes,
       }
-      
+
       try {
-        const filteredRestaurants = await getRestaurants({ tagFilters, size: 3 })
+        const filteredRestaurants = await getRestaurants({ ...tagFilters, size: 3 })
         setRestaurants(filteredRestaurants)
       } catch (error) {
         console.error("Failed to fetch restaurants:", error)

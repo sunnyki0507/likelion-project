@@ -24,14 +24,14 @@ interface GetRestaurantsParams extends TagFilters {
 
 export async function getRestaurants({
   location,
-  category,
+  category = [],
   distance,
   ratings,
   //delivery,
   //vegan,
-  likes,
-  reviews,
-  description,
+  // likes,
+  // reviews,
+  // description,
   price,
   sortBy,
   attributes,
@@ -39,18 +39,21 @@ export async function getRestaurants({
   skip = 0,
 }: GetRestaurantsParams): Promise<RestaurantInfo[]> {
   const params = new URLSearchParams({
-    location: location || "92612",
+    location: location?? "92612",
     limit: size.toString(),
-    //distance,
-    //ratings: ratings.toString(),
+    radius: distance,
+    //ratings: ratings.toString() || "1.0",
     //delivery: delivery.toString(),
-    //categories: category.join(','),
+    categories: category.length > 0 ? category.join(',') : 'asian',
+    attributes: Array.isArray(attributes) && attributes.length > 0 ? attributes.join(','): 'open_to_all',
     //attributes: attributes?.join(',') ?? '',
-    //price: price?.toString() ?? '',
-    //sort_by: 'best_match',
+    price: price?.toString() ?? '2',
+    sort_by: sortBy ?? 'best_match',
     // size: size.toString(),
     // skip: skip.toString(),
   })
+ 
+
 
   const url = `http://localhost:3000/search?${params.toString()}`
   console.log("Sending request to:", url)
