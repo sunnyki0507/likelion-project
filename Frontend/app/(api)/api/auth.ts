@@ -20,11 +20,15 @@ export async function initializeDatabase() {
   try {
     const connection = await pool.getConnection()
 
+    // Create tables if they don't exist
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        firstName VARCHAR(100),
+        lastName VARCHAR(100),
+        nickName VARCHAR(100),
         gender VARCHAR(50),
         country VARCHAR(50),
         timeZone VARCHAR(50),
@@ -32,7 +36,8 @@ export async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
-      await connection.query(`
+
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS restaurants (
         id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -48,7 +53,7 @@ export async function initializeDatabase() {
         likes INT DEFAULT 0,
         description TEXT
       )
-    `);
+    `)
 
     await connection.query(`
       CREATE TABLE IF NOT EXISTS favorites (
@@ -59,7 +64,7 @@ export async function initializeDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
       )
-    `);
+    `)
 
     connection.release()
     console.log("Database initialized successfully")
@@ -69,13 +74,16 @@ export async function initializeDatabase() {
 }
 
 // Sign up a new user
-export async function signUp(email: string, password: string, gender:string, country:string, timeZone:string, language:string) {
+export async function signUp(email: string, password: string, firstName: string, lastName: string, gender: string, country: string, timeZone: string, language: string) {
   try {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Insert the user into the database
-    const [result] = await pool.execute("INSERT INTO users (email, password, gender, country, timeZone, language) VALUES (?, ?, ?, ?, ?, ?)", [email, hashedPassword, gender, country, timeZone, language])
+    const [result] = await pool.execute(
+      "INSERT INTO users (email, password, firstName, lastName, gender, country, timeZone, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+      [email, hashedPassword, firstName, lastName, gender, country, timeZone, language]
+    )
 
     // Return user info (without sensitive data)
     return {
@@ -83,6 +91,8 @@ export async function signUp(email: string, password: string, gender:string, cou
       user: {
         id: (result as any).insertId,
         email,
+        firstName,
+        lastName
       },
     }
   } catch (error: any) {

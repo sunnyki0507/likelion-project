@@ -6,8 +6,9 @@ import CardBoxHolder from "../(components)/(cardBox)/CardBoxHolder"
 import NavBar from "../(components)/NavBar"
 import { ViewType } from "@/types/view"
 import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolder"
-import { TagFilters } from "@/types/tags"
-import { sampleTagFilters } from "@/types/tags"
+import { TagFilters, sampleTagFilters } from "@/types/tags"
+import Profile from "../(components)/(profile)/Profile"
+import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
 
 
 
@@ -24,11 +25,15 @@ export default function Home() {
 			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
 
 			{/* main */}
-			<main className="flex-1 flex">
+			<main className="flex-1 overflow-y-auto">
 				{currentView === 'Favorites' ? (
 					<FavoriteCardHolder />
 				) : currentView === 'Card' ? (
 					<CardBoxHolder tagFilters={tagFilters} />
+				) : currentView === 'Profile' ? (
+					<Profile />
+				) : currentView === 'List' ? (
+					<ListBoxHolder tagFilters={tagFilters} />
 				) : (
 					<></>
 				)}

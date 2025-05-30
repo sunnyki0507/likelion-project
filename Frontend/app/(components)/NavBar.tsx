@@ -89,15 +89,17 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import FilterModal from "./FilterModal"
+import { usePathname, useSearchParams } from "next/navigation"
+import FilterModal from "./(filter)/FilterModal"
 import { ViewType } from "@/types/view"
 import { TagFilters } from "@/types/tags"
 
 export default function Navbar({ changeViewAction, tagFilterState }:
   { changeViewAction: (view: ViewType) => void, tagFilterState: [TagFilters, (tagFilters: TagFilters) => void] }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const isGuest = searchParams.get("guest") === "true"
 
   const isActive = (path: string) => {
     return pathname === path
@@ -139,12 +141,14 @@ export default function Navbar({ changeViewAction, tagFilterState }:
               Change view
             </Link>
 
-            <Link
-              href="/profile"
-              className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
-            >
-              Profile
-            </Link>
+            {!isGuest && (
+              <button
+                onClick={() => changeViewAction("Profile")}
+                className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
+              >
+                Profile
+              </button>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -169,7 +173,8 @@ export default function Navbar({ changeViewAction, tagFilterState }:
 
       <FilterModal isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        tagFilterState={tagFilterState}
+        onApply={tagFilterState[1]}
+        initialFilters={tagFilterState[0]}
       />
     </>
   )
