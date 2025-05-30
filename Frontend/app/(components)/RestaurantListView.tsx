@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { HeartIcon } from "@heroicons/react/24/solid"
-import type { RestaurantInfo } from "../(api)/getRestaurants"
+import { RestaurantInfo } from "@/types/restaurant"
 
 export default function RestaurantListView({ restaurant }: { restaurant: RestaurantInfo }) {
   return (
