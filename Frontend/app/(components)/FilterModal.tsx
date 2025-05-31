@@ -76,7 +76,7 @@ export default function FilterModal({
 
   function mapLocationToZipCode(location: string): string {
     const mapping: Record<string, string> = {
-      "Irvine Spectrum Center": "92618",
+    "Irvine Spectrum Center": "92618",
     "South Coast Plaza": "92626",
     "The Block at Orange": "92868",
     "Fashion Island": "92660",
