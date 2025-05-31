@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { MapPinIcon, MagnifyingGlassIcon, ChevronDownIcon, CheckIcon } from "@heroicons/react/24/solid"
 import { ClockIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
-import { getRestaurants } from "../(api)/getRestaurants"
+import { getRestaurants } from "@/app/(api)/getRestaurants"
 import type { RestaurantInfo } from "@/types/restaurant"
 import type { TagFilters } from "@/types/tags"
 

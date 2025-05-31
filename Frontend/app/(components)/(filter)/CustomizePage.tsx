@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getRestaurants } from "../(api)/getRestaurants"
+import { getRestaurants } from "../../(api)/getRestaurants"
 import type { RestaurantInfo } from "@/types/restaurant"
 import type { TagFilters } from "@/types/tags"
-import FilterModal from "../(components)/FilterModal"
+import FilterModal from "./FilterModal"
 
 interface CustomizePageProps {
   initialRestaurants: RestaurantInfo[]

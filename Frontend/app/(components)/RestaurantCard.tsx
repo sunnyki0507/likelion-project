@@ -3,7 +3,12 @@ import Link from "next/link"
 import { HeartIcon } from "@heroicons/react/24/outline"
 import { RestaurantInfo } from "@/types/restaurant"
 
-export default function RestaurantCard({ restaurant }: { restaurant: RestaurantInfo }) {
+interface RestaurantCardProps {
+  restaurant: RestaurantInfo
+  onViewDetails?: () => void
+}
+
+export default function RestaurantCard({ restaurant, onViewDetails }: RestaurantCardProps) {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col">
       {/* Restaurant Image */}
@@ -49,12 +54,21 @@ export default function RestaurantCard({ restaurant }: { restaurant: RestaurantI
           )}
         </div>
 
-        <Link
-          href={`/restaurant/${restaurant.id}`}
-          className="mt-auto px-4 py-2 bg-black text-white rounded-full text-center hover:bg-gray-800 transition-colors"
-        >
-          View Details
-        </Link>
+        {onViewDetails ? (
+          <button
+            className="mt-auto px-4 py-2 bg-black text-white rounded-full text-center hover:bg-gray-800 transition-colors"
+            onClick={onViewDetails}
+          >
+            View Details
+          </button>
+        ) : (
+          <Link
+            href={`/restaurant/${restaurant.id}`}
+            className="mt-auto px-4 py-2 bg-black text-white rounded-full text-center hover:bg-gray-800 transition-colors"
+          >
+            View Details
+          </Link>
+        )}
       </div>
     </div>
   )

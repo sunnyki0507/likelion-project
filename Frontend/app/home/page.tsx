@@ -10,6 +10,7 @@ import { TagFilters } from "@/types/tags"
 import { sampleTagFilters } from "@/types/tags"
 import { getRestaurants } from "../(api)/getRestaurants"
 import { RestaurantInfo } from "@/types/restaurant"
+import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
 
 
 
@@ -37,6 +38,10 @@ export default function Home() {
 					<FavoriteCardHolder />
 				) : currentView === 'Card' ? (
 					<CardBoxHolder tagFilters={tagFilters} />
+				) : currentView === 'Profile' ? (
+					<Profile />
+				) : currentView === 'List' ? (
+					<ListBoxHolder tagFilters={tagFilters} />
 				) : (
 					<></>
 				)}
