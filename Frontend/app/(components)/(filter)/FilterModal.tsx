@@ -49,7 +49,7 @@ export default function FilterModal({
   const [isAttributesDropdownOpen, setIsAttributesDropdownOpen] = useState(false)
   const [sortBy, setSortBy] = useState(initialFilters?.sortBy || "Best")
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>(
-    initialFilters?.attributes || ["Hot & New", "Open To All"],
+    initialFilters?.attributes || [ "Open To All"],
   )
 
   const sortDropdownRef = useRef<HTMLDivElement>(null)
