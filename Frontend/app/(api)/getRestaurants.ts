@@ -46,7 +46,6 @@ export async function getRestaurants({
     //delivery: delivery.toString(),
     categories: category.length > 0 ? category.join(',') : 'asian',
     attributes: Array.isArray(attributes) && attributes.length > 0 ? attributes.join(','): 'open_to_all',
-    //attributes: attributes?.join(',') ?? '',
     price: price?.toString() ?? '2',
     sort_by: sortBy ?? 'best_match',
     // size: size.toString(),
@@ -59,7 +58,6 @@ export async function getRestaurants({
   console.log("Sending request to:", url)
 
   const res = await fetch(url)
-
   if (!res.ok) {
     console.error("API 요청 실패:", res.status, res.statusText)
     throw new Error("API 요청 실패")
