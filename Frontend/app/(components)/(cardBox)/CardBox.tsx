@@ -3,60 +3,99 @@
 import { RestaurantInfo } from "@/types/restaurant"
 import { HeartIcon } from "@heroicons/react/24/outline"
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid"
+import { getUserFromToken } from "@/utils/auth";
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
-import CardBoxInfoPanel from "./CardBoxInfoPanel"
+import { useEffect, useState } from "react"
 
-interface CardBoxProps {
-  restaurantInfo: RestaurantInfo
-  onViewMore: () => void
-  infoPanelOpen: boolean
-  onCloseInfo: () => void
-}
-
-export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onCloseInfo }: CardBoxProps) {
+export default function CardBox({ restaurantInfo }: { restaurantInfo: RestaurantInfo }) {
   const [isFavorite, setIsFavorite] = useState(false)
   const restaurant = restaurantInfo
 
-  // Dummy data for menus, images, and reviews (replace with real data as needed)
-  const menus = [
-    { name: "Menu Name", img: "/images/sample-menu.jpg" },
-    { name: "Menu Name", img: "/images/sample-menu.jpg" },
-    { name: "Menu Name", img: "/images/sample-menu.jpg" },
-  ]
-  const images = [
-    "/images/sample-menu.jpg",
-    "/images/sample-menu.jpg",
-    "/images/sample-menu.jpg",
-    "/images/sample-menu.jpg",
-    "/images/sample-menu.jpg",
-    "/images/sample-menu.jpg",
-  ]
-  const reviews = [
-    {
-      user: "John D.",
-      rating: 4,
-      text:
-        "Nice burgers but they don't look like the pictures on the website! I had the teriyaki char burger and enjoyed the flavors but couldn't taste teriyaki. My girlfriend had the garden salad without tomato and said it was worth every penny ($3) we also had sweet potato fries which was good not incredible or anything. They sadly forgot to put one extra side of sauce in our bag since we ordered online. Willing to try it again!",
-    },
-    {
-      user: "John D.",
-      rating: 4,
-      text:
-        "Nice burgers but they don't look like the pictures on the website! I had the teriyaki char burger and enjoyed the flavors but couldn't taste teriyaki. My girlfriend had the garden salad without tomato and said it was worth every penny ($3) we also had sweet potato fries which was good not incredible or anything. They sadly forgot to put one extra side of sauce in our bag since we ordered online. Willing to try it again!",
-    },
-  ]
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const user = await getUserFromToken();
+  
+      if (user) {
+        try {
+          const res = await fetch(`/api/fetchFavorites?userId=${user.id}`);
+          const data = await res.json();
+  
+          const isFavorited = data.favorites?.some((fav: RestaurantInfo) => String(fav.id) === String(restaurant.id));
+          setIsFavorite(isFavorited);
+        } catch (err) {
+          console.error("Error fetching favorites from DB:", err);
+          setIsFavorite(false);
+        }
+      } else {
+        const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[];
+        const isFavorited = existing.some((r) => String(r.id) === String(restaurant.id));
+        setIsFavorite(isFavorited);
+      }
+    };
+  
+    checkFavorite();
+  }, [restaurant.id]);
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite)
+
+const toggleFavorite = async () => {
+  const user = await getUserFromToken();
+  console.log("Current user:", user);
+
+  if (user) {
+    try {
+      const method = isFavorite ? "DELETE" : "POST";
+      console.log("Making API request:", {
+        method,
+        userId: user.id,
+        restaurant,
+        restaurantId: restaurant.id
+      });
+
+      const response = await fetch("/api/favorites", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          restaurant,
+          restaurantId: restaurant.id,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API response:", data);
+      
+      if (data.success) {
+        setIsFavorite(!isFavorite);
+      } else {
+        console.error("Failed to update favorite:", data.error);
+      }
+    } catch (error) {
+      console.error("Error updating favorite:", error);
+    }
+  } else {
+    const existing: RestaurantInfo[] = JSON.parse(localStorage.getItem("favorites") || "[]");
+    // Check if restaurant already exists in favorites
+    const isAlreadyFavorite = existing.some(r => r.id === restaurant.id);
+    
+    if (!isAlreadyFavorite) {
+      // If it's not a favorite, add it
+      localStorage.setItem("favorites", JSON.stringify([...existing, restaurant]));
+    }
+    setIsFavorite(!isFavorite);
   }
+};
 
   return (
     <div className="w-[870px] h-[500px] mx-auto bg-white rounded-3xl shadow-lg mb-6 overflow-hidden">
       <div className="flex flex-row">
         {/* Left Content */}
         <div className="flex-1 p-8 space-y-6">
+          {/* Likes Counter */}
+          <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm border">
+            <HeartIcon className="w-4 h-4 text-red-700" />
+            <span>{restaurant.likes}</span>
+          </div>
 
           <h2 className="text-4xl font-bold">{restaurant.name}</h2>
 
@@ -90,58 +129,29 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
 
           <p className="text-gray-600">{restaurant.description || "Description about the restaurant"}</p>
 
-          {infoPanelOpen ? (
-            <button
-              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
-              onClick={onCloseInfo}
-            >
-              Close Info
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M19 12H5M5 12L12 5M5 12L12 19"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          ) : (
-            <button
-              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
-              onClick={onViewMore}
-            >
-              View More
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M5 12H19M19 12L12 5M19 12L12 19"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
+          <button className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2">
+            View More...
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5 12H19M19 12L12 5M19 12L12 19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Right Side: Image or Info Box */}
-        <div className="relative w-[500px] aspect-square bg-gray-50">
-          {infoPanelOpen ? (
-            <CardBoxInfoPanel
-              restaurant={restaurant}
-              onWheel={e => e.stopPropagation()}
-              className="absolute inset-0"
-            />
-          ) : (
-            <Image
-              src={restaurant.image || "/placeholder.svg?height=500&width=500&query=restaurant"}
-              alt={restaurant.name}
-              fill
-              className="object-cover"
-              priority
-            />
-          )}
+        {/* Right Image */}
+        <div className="relative w-[500px] aspect-square">
+          <Image
+            src={restaurant.image || "/placeholder.svg?height=500&width=500&query=restaurant"}
+            alt={restaurant.name}
+            fill
+            className="object-cover"
+            priority
+          />
           <button
             onClick={toggleFavorite}
             className="absolute top-4 right-4 p-3 hover:bg-gray-100/90 rounded-full bg-white shadow-md"

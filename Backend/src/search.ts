@@ -86,8 +86,8 @@ export const searchPlugin = new Elysia()
       })
 
 
-      const businesses = response.data.businesses.map((biz: any) => ({
-        id: biz.id,
+      const businesses = response.data.businesses.map((biz: any, index: number) => ({
+        id: `yelp_${biz.id}_${Date.now()}_${index}`,
         name: biz.name,
         rating: biz.rating,
         reviews: biz.review_count,
@@ -102,7 +102,12 @@ export const searchPlugin = new Elysia()
         attributes: ['hot_and_new', 'reservation'],
       }))
 
-      return businesses
+      // Filter out any duplicate businesses by ID
+      const uniqueBusinesses = businesses.filter((business: any, index: number, self: any[]) =>
+        index === self.findIndex((b: any) => b.id === business.id)
+      )
+
+      return uniqueBusinesses
     } catch (error: any) {
       console.error('Yelp API error:', error.response?.data || error.message)
       set.status = 500

@@ -89,26 +89,18 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import FilterModal from "../(components)/(filter)/FilterModal"
-import { ViewType } from "@/types/view"
-import { TagFilters } from "@/types/tags"
+import { usePathname, useSearchParams } from "next/navigation"
+import FilterModal from "./(filter)/FilterModal"
 import { ViewType } from "@/types/view"
 import { TagFilters } from "@/types/tags"
 
 export default function Navbar({ changeViewAction, tagFilterState }:
-  { changeViewAction: (view: ViewType) => void, 
-    tagFilterState: [TagFilters, (tagFilters: TagFilters) => void] }) 
-  {
-  const [tagFilters, setTagFilters] = tagFilterState
+  { changeViewAction: (view: ViewType) => void, tagFilterState: [TagFilters, (tagFilters: TagFilters) => void] }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
-  //const { toggleView } = useView()
-  
-  const handleApplyFilters = (filters: TagFilters) => {
-    setTagFilters(filters)
-    setIsFilterModalOpen(false)
-  }
+  const isGuest = searchParams.get("guest") === "true"
+
   const isActive = (path: string) => {
     return pathname === path
   }
@@ -149,12 +141,21 @@ export default function Navbar({ changeViewAction, tagFilterState }:
               Change view
             </Link>
 
-            <button
-              onClick={() => changeViewAction("Profile")}
-              className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
-            >
-              Profile
-            </button>
+            {isGuest ? (
+              <Link
+                href="/login"
+                className="font-medium text-gray-600 hover:text-black"
+              >
+                Login
+              </Link>
+            ) : (
+              <button
+                onClick={() => changeViewAction("Profile")}
+                className={`font-medium ${isActive("/profile") ? "text-black" : "text-gray-600 hover:text-black"}`}
+              >
+                Profile
+              </button>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">

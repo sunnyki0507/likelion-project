@@ -1,39 +1,31 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import CardBoxHolder from "../(components)/(cardBox)/CardBoxHolder"
 import NavBar from "../(components)/NavBar"
 import { ViewType } from "@/types/view"
 import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolder"
-import { TagFilters } from "@/types/tags"
-import { sampleTagFilters } from "@/types/tags"
-import { getRestaurants } from "../(api)/getRestaurants"
-import { RestaurantInfo } from "@/types/restaurant"
+import { TagFilters, sampleTagFilters } from "@/types/tags"
+import Profile from "../(components)/(profile)/Profile"
 import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
 
 
 
 export default function Home() {
 	const [currentView, changeView] = useState<ViewType>('Card');
-  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
+
     const tagFilterState = useState<TagFilters>(sampleTagFilters);
     const [tagFilters, setTagFilters] = tagFilterState;
 
-    useEffect(() => {
-      getRestaurants({ ...tagFilters, size: 10 })
-        .then(setRestaurants)
-        .catch((err) => console.error("Fetch failed", err))
-    }, [tagFilters])
-    
 	return (
 		<div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">
 
 			{/* header */}
-			<NavBar changeViewAction={changeView} tagFilterState={[tagFilters, setTagFilters]}/>
+			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
 
 			{/* main */}
-			<main className="flex-1 flex">
+			<main className="flex-1 overflow-y-auto">
 				{currentView === 'Favorites' ? (
 					<FavoriteCardHolder />
 				) : currentView === 'Card' ? (
