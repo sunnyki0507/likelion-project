@@ -44,7 +44,7 @@ export default function Profile() {
 
         const data = await response.json()
         // Populate the form fields with fetched data
-        setFullName(data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : "")
+        setFullName(data.firstName ? `${data.firstName}${data.lastName ? ` ${data.lastName}` : ''}` : "")
         setNickName(data.nickName || "")
         setGender(data.gender || "")
         setCountry(data.country || "")
@@ -69,8 +69,10 @@ export default function Profile() {
       setError("")
       
       try {
-        // Split full name into first and last name
-        const [firstName = "", lastName = ""] = fullName.split(" ")
+        // Split full name into first and last name, handling empty or single name cases
+        const nameParts = fullName.trim().split(/\s+/)
+        const firstName = nameParts[0] || ""
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : ""
         
         const response = await fetch("/api/profile", {
           method: "PUT",
@@ -92,6 +94,17 @@ export default function Profile() {
         if (!response.ok) {
           throw new Error("Failed to update profile")
         }
+
+        // Get the updated data from the response
+        const data = await response.json()
+        
+        // Update the form fields with the response data
+        setFullName(data.firstName ? `${data.firstName}${data.lastName ? ` ${data.lastName}` : ''}` : "")
+        setNickName(data.nickName || "")
+        setGender(data.gender || "")
+        setCountry(data.country || "")
+        setLanguage(data.language || "")
+        setTimeZone(data.timeZone || "")
 
         setIsEditing(false)
       } catch (err) {

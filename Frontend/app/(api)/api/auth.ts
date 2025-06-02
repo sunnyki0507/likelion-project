@@ -135,7 +135,7 @@ export async function logIn(email: string, password: string) {
     const token = jwt.sign(
       payload,
       process.env.JWT_SECRET!,       // make sure this is set in your .env
-      { expiresIn: "1m" }
+      { expiresIn: "10m" }
     )
   
     return {

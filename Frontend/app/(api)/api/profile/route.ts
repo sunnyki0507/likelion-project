@@ -69,7 +69,33 @@ export async function PUT(request: NextRequest) {
       [firstName, lastName, nickName, gender, country, timeZone, language, payload.id]
     )
 
-    return NextResponse.json({ message: "Profile updated successfully" })
+    // Fetch the updated user data
+    const [rows] = await pool.execute(
+      `SELECT id, email, firstName, lastName, nickName, gender, country, timeZone, language, created_at 
+       FROM users 
+       WHERE id = ?`,
+      [payload.id]
+    )
+
+    const users = rows as any[]
+    if (users.length === 0) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Return updated user data
+    const user = users[0]
+    return NextResponse.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      nickName: user.nickName,
+      gender: user.gender,
+      country: user.country,
+      timeZone: user.timeZone,
+      language: user.language,
+      createdAt: user.created_at
+    })
   } catch (error) {
     console.error("Error updating profile:", error)
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 })
