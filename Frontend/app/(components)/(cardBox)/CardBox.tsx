@@ -21,7 +21,10 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
           const res = await fetch(`/api/fetchFavorites?userId=${user.id}`);
           const data = await res.json();
   
-          const isFavorited = data.favorites?.some((fav: RestaurantInfo) => String(fav.id) === String(restaurant.id));
+          // Check both restaurant_id and restaurant_name to ensure we have the correct favorite
+          const isFavorited = data.favorites?.some((fav: any) => 
+            fav.restaurant_name === restaurant.name
+          );
           setIsFavorite(isFavorited);
         } catch (err) {
           console.error("Error fetching favorites from DB:", err);
@@ -29,13 +32,15 @@ export default function CardBox({ restaurantInfo }: { restaurantInfo: Restaurant
         }
       } else {
         const existing = JSON.parse(localStorage.getItem("favorites") || "[]") as RestaurantInfo[];
-        const isFavorited = existing.some((r) => String(r.id) === String(restaurant.id));
+        const isFavorited = existing.some((r) => 
+          r.name === restaurant.name
+        );
         setIsFavorite(isFavorited);
       }
     };
   
     checkFavorite();
-  }, [restaurant.id]);
+  }, [restaurant.id, restaurant.name]);
 
 
 const toggleFavorite = async () => {
@@ -49,7 +54,8 @@ const toggleFavorite = async () => {
         method,
         userId: user.id,
         restaurant,
-        restaurantId: restaurant.id
+        restaurantId: restaurant.id,
+        restaurantName: restaurant.name
       });
 
       const response = await fetch("/api/favorites", {
@@ -59,6 +65,7 @@ const toggleFavorite = async () => {
           userId: user.id,
           restaurant,
           restaurantId: restaurant.id,
+          restaurantName: restaurant.name
         }),
       });
 
@@ -78,7 +85,11 @@ const toggleFavorite = async () => {
     // Check if restaurant already exists in favorites
     const isAlreadyFavorite = existing.some(r => r.id === restaurant.id);
     
-    if (!isAlreadyFavorite) {
+    if (isAlreadyFavorite) {
+      // If it's already a favorite, remove it
+      const updatedFavorites = existing.filter(r => r.id !== restaurant.id);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    } else {
       // If it's not a favorite, add it
       localStorage.setItem("favorites", JSON.stringify([...existing, restaurant]));
     }

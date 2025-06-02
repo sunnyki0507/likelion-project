@@ -11,9 +11,13 @@ export async function GET(req: NextRequest) {
     }
 
     const [rows] = await pool.execute(
-      `SELECT r.* FROM restaurants r
+      `SELECT DISTINCT r.*, f.restaurant_name 
+       FROM restaurants r
        INNER JOIN favorites f ON r.id = f.restaurant_id
-       WHERE f.user_id = ?`,
+       WHERE f.user_id = ?
+       GROUP BY r.id, r.name, r.rating, r.reviews, r.distance, r.category, 
+                r.isOpen, r.hasOnlineOrder, r.hasDelivery, r.takesReservations,
+                r.image, r.likes, r.description, f.restaurant_name`,
       [userId]
     )
 

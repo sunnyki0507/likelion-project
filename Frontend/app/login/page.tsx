@@ -91,6 +91,7 @@ export default function Login() {
                 userId: user.id,
                 restaurant,
                 restaurantId: restaurant.id,
+                restaurantName: restaurant.name
               }),
             });
           }

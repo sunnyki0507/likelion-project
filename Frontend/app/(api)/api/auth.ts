@@ -60,7 +60,9 @@ export async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         restaurant_id VARCHAR(255) NOT NULL,
-        UNIQUE(user_id, restaurant_id),
+        restaurant_name VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_user_restaurant_name (user_id, restaurant_name),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
       )

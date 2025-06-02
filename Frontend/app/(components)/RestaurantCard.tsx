@@ -78,6 +78,7 @@ export default function RestaurantCard({ restaurant, onUnfavorite, isFavoriteVie
             userId: user.id,
             restaurant,
             restaurantId: restaurant.id,
+            restaurantName: restaurant.name
           }),
         });
 

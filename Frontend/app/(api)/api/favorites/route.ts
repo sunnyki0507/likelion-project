@@ -55,10 +55,10 @@ export async function POST(req: NextRequest) {
     console.log("Restaurant insert/update result:", restaurantResult)
 
     // 2. Link user to restaurant in favorites
-    console.log("Attempting to link user to restaurant:", { userId, restaurantId: id })
+    console.log("Attempting to link user to restaurant:", { userId, restaurantId: id, restaurantName: name })
     const [favoriteResult] = await pool.execute(
-      `INSERT IGNORE INTO favorites (user_id, restaurant_id) VALUES (?, ?)`,
-      [userId, id]
+      `INSERT IGNORE INTO favorites (user_id, restaurant_id, restaurant_name) VALUES (?, ?, ?)`,
+      [userId, id, name]
     )
     console.log("Favorite link result:", favoriteResult)
 
@@ -72,12 +72,12 @@ export async function POST(req: NextRequest) {
 // DELETE: Remove a favorite
 export async function DELETE(req: NextRequest) {
   try {
-    const { userId, restaurantId } = await req.json()
-    console.log("Received unfavorite request:", { userId, restaurantId })
+    const { userId, restaurantId, restaurantName } = await req.json()
+    console.log("Received unfavorite request:", { userId, restaurantId, restaurantName })
 
     const [result] = await pool.execute(
-      `DELETE FROM favorites WHERE user_id = ? AND restaurant_id = ?`,
-      [userId, restaurantId]
+      `DELETE FROM favorites WHERE user_id = ? AND restaurant_id = ? AND restaurant_name = ?`,
+      [userId, restaurantId, restaurantName]
     )
     console.log("Unfavorite result:", result)
 
