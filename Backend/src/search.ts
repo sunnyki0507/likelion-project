@@ -75,7 +75,7 @@ export const searchPlugin = new Elysia()
     const queryString = qs.stringify(params, { arrayFormat: 'repeat' })
     console.clear()
     console.log("🔎 Yelp 요청 URL:\n" + `${baseUrl}?${queryString}\n`)
-
+    
     try {
       const response = await axios.get(baseUrl, {
         headers: {
@@ -84,7 +84,7 @@ export const searchPlugin = new Elysia()
         params,
         paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
       })
-
+      console.log("data received: ",response )
 
       const businesses = response.data.businesses.map((biz: any) => ({
         id: biz.id,
