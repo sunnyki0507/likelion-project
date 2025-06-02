@@ -161,7 +161,9 @@ import { useEffect, useRef, useState } from "react"
 import CardBox from "./CardBox"
 import { RestaurantInfo } from "@/types/restaurant"
 import { getRestaurants } from "@/app/(api)/getRestaurants"
-import { sampleTagFilters, TagFilters } from "@/types/tags"
+//import { sampleTagFilters, TagFilters } from "@/types/tags"
+import { TagFilters } from "@/types/tags"
+
 
 const cardSetting = {
   w: 870,
@@ -182,7 +184,7 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
   // init fetch
   useEffect(() => {
     const fetchInitialRestaurants = async () => {
-      const initialRestaurants = await getRestaurants({ tagFilters: tagFilters, size: 5, skip: 0 })
+      const initialRestaurants = await getRestaurants({ ...tagFilters, size: 5, skip: 0 })
       setRestaurants(initialRestaurants)
       restaurantsLengthRef.current = initialRestaurants.length
       setIsLoading(false)
@@ -243,7 +245,7 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
     //fetch
     if (restaurants.length - 1 <= curIndex) {
       (async () => {
-        const moreRestaurants = await getRestaurants({ tagFilters: sampleTagFilters, size: 5, skip: restaurants.length })
+        const moreRestaurants = await getRestaurants({ ...tagFilters, size: 5, skip: restaurants.length })
         setRestaurants((prev) => {
           const updated = [...prev, ...moreRestaurants]
           restaurantsLengthRef.current = updated.length
