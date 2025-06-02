@@ -161,7 +161,7 @@ import { useEffect, useRef, useState } from "react"
 import CardBox from "./CardBox"
 import { RestaurantInfo } from "@/types/restaurant"
 import { getRestaurants } from "@/app/(api)/getRestaurants"
-import { sampleTagFilters, TagFilters } from "@/types/tags"
+import { TagFilters } from "@/types/tags"
 import CardBoxInfoPanel from "./CardBoxInfoPanel"
 
 const cardSetting = {
