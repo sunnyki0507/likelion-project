@@ -205,9 +205,12 @@ export default function FilterModal({
   }
 
   const handleApply = () => {
+    const mappedCategories = selectedCategories
+    .map((cat) => categoryAliasMap[cat] || cat) // 매핑이 없으면 그대로 사용
+    .filter((cat) => !!cat)
     const newFilters: TagFilters = {
       location: mapLocationToZipCode(selectedLocation) || "92612", // Default location
-      category: selectedCategories,
+      category: mappedCategories,
       distance: distance.toString(),
       ratings: rating,
       //delivery: selectedAttributes.includes("Available for delivery"),

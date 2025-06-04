@@ -59,7 +59,7 @@ export const searchPlugin = new Elysia()
       categories: parsedCategories,
       attributes: parsedAttributes,
       price: price ? String(price) : undefined,
-      limit: 50,
+      limit: 40,
       //open_now: true,
       sort_by: mapSortKey(sortBy),
     }
@@ -84,7 +84,7 @@ export const searchPlugin = new Elysia()
         params,
         paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
       })
-      console.log("data received: ",response )
+      //console.log("data received: ",response )
 
       const businesses = response.data.businesses.map((biz: any) => ({
         id: biz.id,
