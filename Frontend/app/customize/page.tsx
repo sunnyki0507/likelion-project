@@ -56,7 +56,7 @@
 //   );
 // }
 import { getRestaurants } from "../(api)/getRestaurants"
-import CustomizePage from "../(components)/CustomizePage"
+import CustomizePage from "../(components)/(filter)/CustomizePage"
 
 export default async function CustomizePageRoute() {
   // Fetch initial restaurants with default filters

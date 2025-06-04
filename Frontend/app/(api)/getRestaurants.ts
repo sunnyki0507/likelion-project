@@ -135,32 +135,38 @@ export async function getRestaurants({
   size = 10,
   skip = 0,
 }: GetRestaurantsParams): Promise<RestaurantInfo[]> {
-  const params = new URLSearchParams({
-    location: "92612",
-    size: size.toString(),
-    skip: skip.toString(),
-  })
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
-  // Add tagFilters as query parameters ("tags after the address")
-  if (tagFilters.category && tagFilters.category.length > 0) {
-    params.append("category", tagFilters.category.join(","))
-  }
+  // Filter the sample data based on tagFilters
+  let filteredRestaurants = [...sampleRestaurants]
+
+  // Apply filters
   if (tagFilters.ratings > 0) {
-    params.append("ratings", tagFilters.ratings.toString())
+    filteredRestaurants = filteredRestaurants.filter(
+      (r) => r.rating >= tagFilters.ratings
+    )
   }
   if (tagFilters.delivery) {
-    params.append("delivery", "true")
+    filteredRestaurants = filteredRestaurants.filter((r) => r.hasDelivery)
   }
   if (tagFilters.price && tagFilters.price > 0) {
-    params.append("price", tagFilters.price.toString())
+    filteredRestaurants = filteredRestaurants.filter((r) => r.price === tagFilters.price)
   }
+
+  // Apply sorting
   if (tagFilters.sortBy) {
-    params.append("sortBy", tagFilters.sortBy)
+    switch (tagFilters.sortBy.toLowerCase()) {
+      case "rating":
+        filteredRestaurants.sort((a, b) => b.rating - a.rating)
+        break
+      case "reviews":
+        filteredRestaurants.sort((a, b) => b.reviews - a.reviews)
+        break
+      // Add more sorting options as needed
+    }
   }
 
-  const response = await fetch(`http://localhost:3001/search?${params.toString()}`)
-  const data = await response.json()
-  return data
+  // Apply pagination
+  return filteredRestaurants.slice(skip, skip + size)
 }
-
-  
