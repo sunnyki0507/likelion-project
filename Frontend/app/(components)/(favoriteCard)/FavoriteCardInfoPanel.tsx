@@ -26,7 +26,8 @@ export default function FavoriteCardInfoPanel({ restaurant, onClose }: FavoriteC
             restaurant={restaurant}
             className="h-[80vh]"
             onWheel={e => e.stopPropagation()}
-          /></div>
+          />
+        </div>
       </div>
     </div>
   )

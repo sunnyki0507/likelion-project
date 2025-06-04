@@ -1,58 +1,77 @@
-import { useEffect, useState } from "react";
-import CardBox from "../(cardBox)/CardBox";
-import { RestaurantInfo } from "@/types/restaurant";
-import { getRestaurants } from "@/app/(api)/getRestaurants";
-import { TagFilters } from "@/types/tags";
-import CardBoxInfoPanel from "../(cardBox)/CardBoxInfoPanel";
-import ListBox from "./ListBox";
-import { ViewType } from "@/types/view";
+"use client"
+
+import { useEffect, useState } from "react"
+import type { RestaurantInfo } from "@/types/restaurant"
+import { getRestaurants } from "@/app/(api)/getRestaurants"
+import type { TagFilters } from "@/types/tags"
+import ListBox from "./ListBox"
+import FavoriteCardInfoPanel from "../(favoriteCard)/FavoriteCardInfoPanel"
 
 interface ListBoxHolderProps {
-  tagFilters: TagFilters;
+  tagFilters: TagFilters
 }
 
 export default function ListBoxHolder({ tagFilters }: ListBoxHolderProps) {
-  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [infoBoxRestaurant, setInfoBoxRestaurant] = useState<RestaurantInfo | null>(null);
+  const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+
+  const [infoRestaurant, setInfoRestaurant] = useState<RestaurantInfo | null>(null)
+
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("favorites")
+    if (savedFavorites) {
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites)
+        setFavorites(new Set(parsedFavorites))
+      } catch (e) {
+        console.error("Error parsing favorites from localStorage:", e)
+      }
+    }
+  }, [])
 
   // Fetch restaurants based on tagFilters
   useEffect(() => {
     const fetchRestaurants = async () => {
-      setIsLoading(true);
-      const fetchedRestaurants = await getRestaurants({ tagFilters: tagFilters, size: 5, skip: 0 }); // Fetch initial set
-      setRestaurants(fetchedRestaurants);
-      setIsLoading(false);
-    };
-    fetchRestaurants();
-  }, [tagFilters]); // Re-fetch when tagFilters change
+      setIsLoading(true)
+      const fetchedRestaurants = await getRestaurants({ tagFilters: tagFilters, size: 10, skip: 0 })
+      setRestaurants(fetchedRestaurants)
+      setIsLoading(false)
+    }
+    fetchRestaurants()
+  }, [tagFilters])
+
 
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col px-4 py-8 max-w-screen-xl mx-auto">
-      <div className="flex flex-col space-y-6 items-center w-full">
-        {isLoading ? (
-          // Basic loading indicator
-          <div>Loading...</div>
-        ) : restaurants.length === 0 ? (
-          <div className="col-span-full text-center text-gray-500">No restaurants found</div>
-        ) : (
-          restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="w-full">
-              <ListBox
-                restaurantInfo={restaurant}
-                onViewMore={() => setInfoBoxRestaurant(restaurant)}
-              />
+    <div className="w-full flex justify-center">
+      <div className="w-full max-w-4xl px-4 py-6">
+        <div className="space-y-4">
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading restaurants...</p>
             </div>
-          ))
-        )}
+          ) : (
+            restaurants.map((restaurant) => (
+              <div key={restaurant.id} className="flex justify-center">
+                <ListBox
+                  restaurantInfo={restaurant}
+                  onViewMore={() => setInfoRestaurant(restaurant)}
+                  infoPanelOpen={infoRestaurant?.id === restaurant.id}
+                  onCloseInfo={() => setInfoRestaurant(null)}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      {/* Assuming you might have an info panel for ListBox too */}
-      {/* {infoBoxRestaurant && (
-        <ListBoxInfoPanel
-          restaurant={infoBoxRestaurant}
-          onClose={() => setInfoBoxRestaurant(null)}
+      {infoRestaurant && (
+        <FavoriteCardInfoPanel
+          restaurant={infoRestaurant}
+          onClose={() => setInfoRestaurant(null)}
         />
-      )} */}
+      )}
     </div>
-  );
+  )
 }
