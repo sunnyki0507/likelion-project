@@ -65,17 +65,14 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
   }
 
   return (
-    <div className="w-[870px] h-[500px] mx-auto bg-white rounded-3xl shadow-lg mb-6 overflow-hidden">
+    <div className="w-[1000px] h-[500px] mx-auto bg-white rounded-3xl shadow-lg mb-6 overflow-hidden">
       <div className="flex flex-row">
         {/* Left Content */}
-        <div className="flex-1 p-8 space-y-6">
+        <div className="flex-1 p-8 space-y-6 relative max-w-[500px]">
           {/* Likes Counter */}
-          <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm border">
-            <HeartIcon className="w-4 h-4 text-red-700" />
-            <span>{restaurant.likes}</span>
-          </div>
 
-          <h2 className="text-4xl font-bold">{restaurant.name}</h2>
+          <h2 className="text-4xl font-bold pt-10 break-words">{restaurant.name}</h2>
+
 
           <div className="flex items-center gap-3">
             <span className="text-xl">{restaurant.rating}</span>
@@ -92,7 +89,7 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="text-green-500 font-medium">{restaurant.isOpen ? "Open" : "Closed"}</span>
+            <span className="text-green-500 font-medium py-2">{restaurant.isOpen ? "Open" : "Closed"}</span>
             {restaurant.hasOnlineOrder && <span className="text-gray-500">• Order Online</span>}
           </div>
 
@@ -105,41 +102,42 @@ export default function CardBox({ restaurantInfo, onViewMore, infoPanelOpen, onC
             )}
           </div>
 
-          <p className="text-gray-600">{restaurant.description || "Description about the restaurant"}</p>
-
-          {infoPanelOpen ? (
-            <button
-              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
-              onClick={onCloseInfo}
-            >
-              Close Info
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M19 12H5M5 12L12 5M5 12L12 19"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          ) : (
-            <button
-              className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
-              onClick={onViewMore}
-            >
-              View More
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M5 12H19M19 12L12 5M19 12L12 19"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
+          {/* View More/Close Info Button - Now positioned at bottom right of left div */}
+          <div className="absolute bottom-14 right-8">
+            {infoPanelOpen ? (
+              <button
+                className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
+                onClick={onCloseInfo}
+              >
+                Close Info
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M19 12H5M5 12L12 5M5 12L12 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            ) : (
+              <button
+                className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-900 flex items-center gap-2"
+                onClick={onViewMore}
+              >
+                View More
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M5 12H19M19 12L12 5M19 12L12 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Right Side: Image or Info Box */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MapPinIcon, ChevronDownIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { ChevronDown } from "lucide-react";
+
 
 interface LocationSectionProps {
     selectedLocation: string;
@@ -34,7 +34,7 @@ export default function LocationSection({
     return (
       <div className = "flex items-center mb-1">
         <div className="bg-black rounded-full p-3 mr-3">
-          <MapPinIcon className="w-6 h-6 text-white" />
+          <MapPinIcon className="w-4 h-4 text-white" />
         </div>
 
         <div className="relative w-full ">
@@ -47,7 +47,7 @@ export default function LocationSection({
         >
           <div className="flex flex-col">
             <p className="text-gray-500 mr-auto">Current location</p>
-            <h2 className="text-2xl font-medium">{selectedLocation}</h2>
+            <h2 className="text-xl font-medium">{selectedLocation}</h2>
           </div>
           <MagnifyingGlassIcon className="w-9 h-9 ml-3" />
         </button>

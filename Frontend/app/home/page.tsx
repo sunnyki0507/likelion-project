@@ -17,22 +17,21 @@ export default function Home() {
 	const [currentView, changeView] = useState<ViewType>('Card');
 	const [favoriteRestaurants, setFavoriteRestaurants] = useState<RestaurantInfo[]>([]);
 
-    const tagFilterState = useState<TagFilters>(sampleTagFilters);
-    const [tagFilters, setTagFilters] = tagFilterState;
+	const tagFilterState = useState<TagFilters>(sampleTagFilters);
+	const [tagFilters, setTagFilters] = tagFilterState;
 
 	return (
 		<div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">
 
 			{/* header */}
-			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
+			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState} />
 
 			{/* main */}
-			{currentView}
 			<main className="flex-1 overflow-y-auto">
 				{currentView === 'Favorites' ? (
 					<FavoriteCardHolder />
 				) : currentView === 'Card' ? (
-					<CardBoxHolder tagFilters={tagFilters}/>
+					<CardBoxHolder tagFilters={tagFilters} />
 				) : currentView === 'Profile' ? (
 					<Profile />
 				) : currentView === 'List' ? (
@@ -46,10 +45,7 @@ export default function Home() {
 			<footer className="w-full mt-auto border-t border-neutral-300">
 				<div className="max-w-screen-xl mx-auto px-4">
 					<div className="flex items-center justify-center gap-4 text-sm text-gray-600 py-3">
-						<Link href="/help">Help Center</Link>
-						<Link href="/terms">Terms of Service</Link>
-						<Link href="/privacy">Privacy Policy</Link>
-						<Link href="/cookies">Cookie Policy</Link>
+						Copyright © 2025 BAPAGO. All rights reserved.
 					</div>
 				</div>
 			</footer>

@@ -8,8 +8,8 @@ import { sampleTagFilters, TagFilters } from "@/types/tags"
 import CardBoxInfoPanel from "./CardBoxInfoPanel"
 
 const cardSetting = {
-  w: 870,
-  h: 500,
+  w: 1000, //870
+  h: 500, //500
   gap: 300,
 }
 
@@ -27,13 +27,14 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
   // init fetch
   useEffect(() => {
     const fetchInitialRestaurants = async () => {
+      setIsLoading(true)
       const initialRestaurants = await getRestaurants({ tagFilters: tagFilters, size: 5, skip: 0 })
       setRestaurants(initialRestaurants)
       restaurantsLengthRef.current = initialRestaurants.length
       setIsLoading(false)
     }
     fetchInitialRestaurants()
-  }, [])
+  }, [tagFilters])
 
   // capture wheel movement => curIndex++ / curIndex--
   const threshold = 400
@@ -130,7 +131,7 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
           </div>
         ) : (
           restaurants.map((restaurant) => (
-            <div className="flex-shrink-0" key={restaurant.id}>
+            <div className="flex-shrink-0" key={`${restaurant.id}`}>
               <CardBox 
                 restaurantInfo={restaurant} 
                 onViewMore={() => setInfoBoxRestaurant(restaurant)}
