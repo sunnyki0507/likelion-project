@@ -13,3 +13,23 @@ export interface RestaurantInfo {
     likes?: number
     description?: string
   }
+
+
+export type RestaurantDetail = {
+	popularMenus: MenuItem[]
+	foodImageUrls: string[]
+	reviews: Review[]
+}
+
+type MenuItem = {
+	name: string
+  thumbnail: string
+	desc: string
+	price: string
+}
+
+type Review = {
+	authorName: string
+	rating: number // 0~5
+	content: string
+}
