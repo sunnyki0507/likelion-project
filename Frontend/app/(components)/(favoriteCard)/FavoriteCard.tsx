@@ -147,10 +147,10 @@ export default function FavoriteCard({ restaurant, onUnfavorite, isFavoriteView 
           <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">
             {restaurant.isOpen ? "Open Now" : "Closed"}
           </span>
-          {restaurant.hasDelivery && (
+          {Boolean(restaurant.hasDelivery) && (
             <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">Delivery</span>
           )}
-          {restaurant.takesReservations && (
+          {Boolean(restaurant.takesReservations) && (
             <span className="px-3 py-1 bg-gray-100 rounded-full text-xs">Reservations</span>
           )}
         </div>
