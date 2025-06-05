@@ -43,10 +43,7 @@ export default function Home() {
 			<footer className="w-full mt-auto border-t border-neutral-300">
 				<div className="max-w-screen-xl mx-auto px-4">
 					<div className="flex items-center justify-center gap-4 text-sm text-gray-600 py-3">
-						<Link href="/help">Help Center</Link>
-						<Link href="/terms">Terms of Service</Link>
-						<Link href="/privacy">Privacy Policy</Link>
-						<Link href="/cookies">Cookie Policy</Link>
+						Copyright © 2025 BAPAGO. All rights reserved.
 					</div>
 				</div>
 			</footer>

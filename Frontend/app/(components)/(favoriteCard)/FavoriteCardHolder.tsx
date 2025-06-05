@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react"
 //import { getRestaurants } from "../../(api)/getRestaurants"
-import RestaurantCard from "../RestaurantCard"
+import FavoriteCard from "./FavoriteCard"
 //import type { TagFilters } from "../../../types/tags"
 import type { RestaurantInfo } from "@/types/restaurant"
 import { AnimatePresence } from "framer-motion"
 import { getUserFromToken } from "@/utils/auth"
+import FavoriteCardInfoPanel from "./FavoriteCardInfoPanel"
 
 /*const sampleTagFilters: TagFilters = {
   location: "irvine",
@@ -23,6 +24,7 @@ import { getUserFromToken } from "@/utils/auth"
 export default function FavoriteCardHolder() {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [infoRestaurant, setInfoRestaurant] = useState<RestaurantInfo | null>(null)
 
 useEffect(() => {
   const loadFavorites = async () => {
@@ -48,6 +50,7 @@ useEffect(() => {
   }
 
   return (
+    <>
     <div className="w-full px-4 py-8 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Favorites</h1>
 
@@ -60,16 +63,24 @@ useEffect(() => {
         ) : (
           <AnimatePresence mode="popLayout">
             {restaurants.map((restaurant) => (
-            <RestaurantCard
+            <FavoriteCard
               key={restaurant.id}
               restaurant={restaurant}
               onUnfavorite={removeFavorite}
               isFavoriteView={true}
+              onViewMore={() => setInfoRestaurant(restaurant)}
           />
         ))}
           </AnimatePresence>
         )}
       </div>
     </div>
+    {infoRestaurant && (
+        <FavoriteCardInfoPanel
+          restaurant={infoRestaurant}
+          onClose={() => setInfoRestaurant(null)}
+        />
+      )}
+      </>
   )
 }
