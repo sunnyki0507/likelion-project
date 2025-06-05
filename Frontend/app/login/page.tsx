@@ -161,6 +161,7 @@ export default function Login() {
         setConfirmPassword("")
         setFirstName("")
         setLastName("")
+        router.push("/home")
       } else {
         setError(result.error || "Sign up failed")
       }
@@ -170,6 +171,7 @@ export default function Login() {
     }
 
     setIsLoading(false)
+    await handleLogin(new Event("submit") as unknown as React.FormEvent);
   }
 
   const handleLogout = async () => {
@@ -206,8 +208,9 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center bg-gray-200 text-black font-poppins select-none min-h-screen">
         <div className="bg-white p-8 rounded-3xl shadow-md max-w-md w-full">
           <h1 className="text-2xl font-medium text-gray-700 mb-4 text-center">Welcome to BAPAGO</h1>
-          <p className="text-gray-500 mb-2 text-center">You are successfully logged in!</p>
+          <p className="text-gray-500 mb-2 text-center">You are successfully logged in! </p>
           <p className="text-gray-500 mb-6 text-center">Email: {userData.email}</p>
+          <p className="text-gray-500 mb-2 text-center">Loading... </p>
           <button
             onClick={handleLogout}
             className="w-full h-12 flex items-center justify-center bg-gray-600 text-white rounded-full font-medium hover:bg-gray-800 transition"
@@ -283,86 +286,6 @@ export default function Login() {
                   maxLength={30}
                   className="w-full mt-1 h-10 p-3 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400"
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-light text-gray-500">Gender</label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
-                > 
-                  <option value="" disabled>Select your gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                  <option value="prefer_not_to_say">Prefer not to say</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-light text-gray-500">Country</label>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
-                >
-                  <option value="" disabled>Select your country</option>
-                  <option value="us">United States</option>
-                  <option value="kr">South Korea</option>
-                  <option value="jp">Japan</option>
-                  <option value="cn">China</option>
-                  <option value="ca">Canada</option>
-                  <option value="gb">United Kingdom</option>
-                  <option value="au">Australia</option>
-                  <option value="de">Germany</option>
-                  <option value="fr">France</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-light text-gray-500">Time Zone</label>
-                <select
-                  value={timeZone}
-                  onChange={(e) => setTimeZone(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
-                >
-                  <option value="" disabled>Select your time zone</option>
-                  <option value="PST">Pacific Standard Time (PST)</option>
-                  <option value="MST">Mountain Standard Time (MST)</option>
-                  <option value="CST">Central Standard Time (CST)</option>
-                  <option value="EST">Eastern Standard Time (EST)</option>
-                  <option value="GMT">Greenwich Mean Time (GMT)</option>
-                  <option value="CET">Central European Time (CET)</option>
-                  <option value="IST">India Standard Time (IST)</option>
-                  <option value="KST">Korea Standard Time (KST)</option>
-                  <option value="JST">Japan Standard Time (JST)</option>
-                  <option value="AEST">Australian Eastern Standard Time (AEST)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-light text-gray-500">Language</label>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 py-1 ring-1 ring-gray-300 rounded-md outline-none focus:ring-2 focus:ring-gray-400 bg-white"
-                >
-                  <option value="" disabled>Select your language</option>
-                  <option value="en">English</option>
-                  <option value="ko">Korean</option>
-                  <option value="zh">Chinese (Simplified)</option>
-                  <option value="zh-tw">Chinese (Traditional)</option>
-                  <option value="ja">Japanese</option>
-                  <option value="fr">French</option>
-                  <option value="es">Spanish</option>
-                  <option value="de">German</option>
-                  <option value="hi">Hindi</option>
-                  <option value="ar">Arabic</option>
-                  <option value="pt">Portuguese</option>
-                  <option value="ru">Russian</option>
-                  <option value="vi">Vietnamese</option>
-                  <option value="th">Thai</option>
-                  <option value="tr">Turkish</option>
-                  <option value="it">Italian</option>
-                </select>
               </div>
 
               <button

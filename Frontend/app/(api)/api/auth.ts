@@ -33,9 +33,11 @@ export async function initializeDatabase() {
         country VARCHAR(50),
         timeZone VARCHAR(50),
         language VARCHAR(50),
+        profile_image MEDIUMTEXT DEFAULT '/profile-icon.svg',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+
 
     await connection.query(`
       CREATE TABLE IF NOT EXISTS restaurants (
@@ -83,8 +85,8 @@ export async function signUp(email: string, password: string, firstName: string,
 
     // Insert the user into the database
     const [result] = await pool.execute(
-      "INSERT INTO users (email, password, firstName, lastName, gender, country, timeZone, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-      [email, hashedPassword, firstName, lastName, gender, country, timeZone, language]
+      "INSERT INTO users (email, password, firstName, lastName, gender, country, timeZone, language, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+      [email, hashedPassword, firstName, lastName, gender, country, timeZone, language, "/profile-icon.svg"]
     )
 
     // Return user info (without sensitive data)
@@ -94,7 +96,8 @@ export async function signUp(email: string, password: string, firstName: string,
         id: (result as any).insertId,
         email,
         firstName,
-        lastName
+        lastName,
+        profile_image: "/profile-icon.svg"
       },
     }
   } catch (error: any) {
@@ -140,10 +143,12 @@ export async function logIn(email: string, password: string) {
   
     return {
       success: true,
-      user: payload,   // safe to return
+      user: {
+        ...payload,
+        profile_image: user.profile_image || "/profile-icon.svg"
+      },
       token            // <-- return the raw JWT
     }  
-
 
     // Return user info (without sensitive data)
   } catch (error) {

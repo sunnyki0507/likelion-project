@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     
     // Fetch user data from database
     const [rows] = await pool.execute(
-      `SELECT id, email, firstName, lastName, nickName, gender, country, timeZone, language, created_at 
+      `SELECT id, email, firstName, lastName, nickName, gender, country, timeZone, language, profile_image, created_at 
        FROM users 
        WHERE id = ?`,
       [payload.id]
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
       country: user.country,
       timeZone: user.timeZone,
       language: user.language,
+      profile_image: user.profile_image || "/images/default-avatar.png",
       createdAt: user.created_at
     })
   } catch (error) {
@@ -59,19 +60,19 @@ export async function PUT(request: NextRequest) {
     
     // Get the updated profile data from the request body
     const data = await request.json()
-    const { firstName, lastName, nickName, gender, country, timeZone, language } = data
+    const { firstName, lastName, nickName, gender, country, timeZone, language, profile_image } = data
 
     // Update user data in database
     await pool.execute(
       `UPDATE users 
-       SET firstName = ?, lastName = ?, nickName = ?, gender = ?, country = ?, timeZone = ?, language = ?
+       SET firstName = ?, lastName = ?, nickName = ?, gender = ?, country = ?, timeZone = ?, language = ?, profile_image = ?
        WHERE id = ?`,
-      [firstName, lastName, nickName, gender, country, timeZone, language, payload.id]
+      [firstName, lastName, nickName, gender, country, timeZone, language, profile_image || "/images/default-avatar.png", payload.id]
     )
 
     // Fetch the updated user data
     const [rows] = await pool.execute(
-      `SELECT id, email, firstName, lastName, nickName, gender, country, timeZone, language, created_at 
+      `SELECT id, email, firstName, lastName, nickName, gender, country, timeZone, language, profile_image, created_at 
        FROM users 
        WHERE id = ?`,
       [payload.id]
@@ -94,6 +95,7 @@ export async function PUT(request: NextRequest) {
       country: user.country,
       timeZone: user.timeZone,
       language: user.language,
+      profile_image: user.profile_image || "/images/default-avatar.png",
       createdAt: user.created_at
     })
   } catch (error) {

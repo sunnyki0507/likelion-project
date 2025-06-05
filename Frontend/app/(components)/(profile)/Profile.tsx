@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 
 interface UserProfile {
@@ -15,6 +15,7 @@ interface UserProfile {
   timeZone: string
   language: string
   createdAt: string
+  profile_image: string
 }
 
 export default function Profile() {
@@ -30,6 +31,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
+  const [profileImage, setProfileImage] = useState("/profile-icon.svg")
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -51,6 +54,7 @@ export default function Profile() {
         setLanguage(data.language || "")
         setTimeZone(data.timeZone || "")
         setEmail(data.email)
+        setProfileImage(data.profile_image || "/profile-icon.svg")
       } catch (err) {
         console.error("Error fetching profile:", err)
         setError("Failed to load profile")
@@ -61,6 +65,37 @@ export default function Profile() {
 
     fetchProfile()
   }, [])
+
+  const handleImageClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click()
+    }
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size should be less than 5MB")
+      return
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setError("Please upload an image file")
+      return
+    }
+
+    // Create a FileReader to read the image
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      // Update the profile image state with the new image
+      setProfileImage(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleEdit = async () => {
     if (isEditing) {
@@ -87,7 +122,8 @@ export default function Profile() {
             gender,
             country,
             timeZone,
-            language
+            language,
+            profile_image: profileImage
           })
         })
 
@@ -105,6 +141,7 @@ export default function Profile() {
         setCountry(data.country || "")
         setLanguage(data.language || "")
         setTimeZone(data.timeZone || "")
+        setProfileImage(data.profile_image || "/profile-icon.svg")
 
         setIsEditing(false)
       } catch (err) {
@@ -170,12 +207,45 @@ export default function Profile() {
 
         {/* Profile Card */}
         <div className="flex items-center space-x-6 mb-12">
-          <div className="w-24 h-24 relative rounded-full overflow-hidden bg-gray-200">
+          <div 
+            className="w-24 h-24 relative rounded-full overflow-hidden bg-gray-200 cursor-pointer group"
+            onClick={handleImageClick}
+          >
             <Image
-              src="/images/default-avatar.png"
+              src={profileImage}
               alt="Profile"
               fill
               className="object-cover"
+            />
+            {isEditing && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg 
+                  className="w-8 h-8 text-white" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" 
+                  />
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" 
+                  />
+                </svg>
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              accept="image/*"
+              className="hidden"
             />
           </div>
           <div>
