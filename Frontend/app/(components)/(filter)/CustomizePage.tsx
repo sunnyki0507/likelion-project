@@ -8,10 +8,9 @@ import FilterModal from "./FilterModal"
 
 interface CustomizePageProps {
   initialRestaurants: RestaurantInfo[]
-  setTagFilters: (filters: TagFilters) => void
 }
 
-export default function CustomizePage({ initialRestaurants, setTagFilters }: CustomizePageProps) {
+export default function CustomizePage({ initialRestaurants }: CustomizePageProps) {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>(initialRestaurants)
   const [selectedLocation, setSelectedLocation] = useState("Irvine Spectrum Center")
   const [distance, setDistance] = useState(20)
@@ -27,6 +26,11 @@ export default function CustomizePage({ initialRestaurants, setTagFilters }: Cus
     category: selectedCategories,
     distance: distance.toString(),
     ratings: rating,
+    //delivery: selectedAttributes.includes("Available for delivery"),
+    //vegan: false,
+    likes: 0,
+    reviews: 0,
+    description: "",
     price,
     sortBy,
     attributes: selectedAttributes,
@@ -42,16 +46,13 @@ export default function CustomizePage({ initialRestaurants, setTagFilters }: Cus
     setSortBy(newFilters.sortBy || "Best")
     setSelectedAttributes(newFilters.attributes || [])
 
-    // Update the global filter state
-    setTagFilters(newFilters)
-
     // Fetch restaurants with the new filters
     fetchRestaurants(newFilters)
   }
 
   const fetchRestaurants = async (filters: TagFilters) => {
     try {
-      const filteredRestaurants = await getRestaurants({ tagFilters: filters, size: 3 })
+      const filteredRestaurants = await getRestaurants({ ...filters, size: 3 })
       setRestaurants(filteredRestaurants)
     } catch (error) {
       console.error("Failed to fetch restaurants:", error)

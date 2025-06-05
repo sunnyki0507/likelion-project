@@ -9,24 +9,28 @@ import FavoriteCardHolder from "../(components)/(favoriteCard)/FavoriteCardHolde
 import { TagFilters, sampleTagFilters } from "@/types/tags"
 import Profile from "../(components)/(profile)/Profile"
 import ListBoxHolder from "../(components)/(listBox)/ListBoxHolder"
+import { getRestaurants } from "../(api)/getRestaurants"
+import { RestaurantInfo } from "@/types/restaurant"
 
 
 
 export default function Home() {
 	const [currentView, changeView] = useState<ViewType>('Card');
-
+	const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
     const tagFilterState = useState<TagFilters>(sampleTagFilters);
     const [tagFilters, setTagFilters] = tagFilterState;
 
 	useEffect(() => {
-		console.log(tagFilters)
-	}, [tagFilters])
+		getRestaurants({ ...tagFilters, size: 10 })
+		  .then(setRestaurants)
+		  .catch((err) => console.error("Fetch failed", err))
+	  }, [tagFilters])
 
 	return (
 		<div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">
 
 			{/* header */}
-			<NavBar changeViewAction={changeView} tagFilterState={tagFilterState}/>
+			<NavBar changeViewAction={changeView} tagFilterState={[tagFilters, setTagFilters]}/>
 
 			{/* main */}
 			<main className="flex-1 overflow-y-auto">
