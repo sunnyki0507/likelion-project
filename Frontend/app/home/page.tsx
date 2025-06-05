@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import CardBoxHolder from "../(components)/(cardBox)/CardBoxHolder"
 import NavBar from "../(components)/NavBar"
@@ -17,6 +17,10 @@ export default function Home() {
 
     const tagFilterState = useState<TagFilters>(sampleTagFilters);
     const [tagFilters, setTagFilters] = tagFilterState;
+
+	useEffect(() => {
+		console.log(tagFilters)
+	}, [tagFilters])
 
 	return (
 		<div className="w-full h-full flex flex-col bg-white text-neutral-800 " id="_home">

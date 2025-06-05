@@ -35,7 +35,7 @@ export default function CardBoxHolder({ tagFilters }: { tagFilters: TagFilters }
       setIsLoading(false)
     }
     fetchInitialRestaurants()
-  }, [])
+  }, [tagFilters])
 
   // capture wheel movement => curIndex++ / curIndex--
   const threshold = 400

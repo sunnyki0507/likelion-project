@@ -182,7 +182,7 @@ export default function FilterModal({
       `}
         style={{
           width: isOpen ? "950px" : "100%",
-          height: isOpen ? "80vh" : "100vh",
+          height: isOpen ? "720px" : "100vh",
         }}
         onWheel={e => e.stopPropagation()}
       >
@@ -453,20 +453,21 @@ export default function FilterModal({
                     )}
                   </div>
 
+
+                  {/* Apply Button */}
+                  <div className="flex mt-[320px] ml-14">
+                    <button
+                      onClick={handleApply}
+                      className="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-base"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          {/* Apply Button */}
-          <div className="fixed bottom-8 right-8">
-            <button
-              onClick={handleApply}
-              className="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-base"
-            >
-              Apply Filters
-            </button>
-          </div>
         </div>
       </div>
     </div>

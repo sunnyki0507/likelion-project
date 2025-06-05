@@ -8,9 +8,10 @@ import FilterModal from "./FilterModal"
 
 interface CustomizePageProps {
   initialRestaurants: RestaurantInfo[]
+  setTagFilters: (filters: TagFilters) => void
 }
 
-export default function CustomizePage({ initialRestaurants }: CustomizePageProps) {
+export default function CustomizePage({ initialRestaurants, setTagFilters }: CustomizePageProps) {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>(initialRestaurants)
   const [selectedLocation, setSelectedLocation] = useState("Irvine Spectrum Center")
   const [distance, setDistance] = useState(20)
@@ -26,11 +27,6 @@ export default function CustomizePage({ initialRestaurants }: CustomizePageProps
     category: selectedCategories,
     distance: distance.toString(),
     ratings: rating,
-    //delivery: selectedAttributes.includes("Available for delivery"),
-    //vegan: false,
-    likes: 0,
-    reviews: 0,
-    description: "",
     price,
     sortBy,
     attributes: selectedAttributes,
@@ -45,6 +41,9 @@ export default function CustomizePage({ initialRestaurants }: CustomizePageProps
     setPrice(newFilters.price || 2)
     setSortBy(newFilters.sortBy || "Best")
     setSelectedAttributes(newFilters.attributes || [])
+
+    // Update the global filter state
+    setTagFilters(newFilters)
 
     // Fetch restaurants with the new filters
     fetchRestaurants(newFilters)
