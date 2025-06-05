@@ -10,7 +10,6 @@ interface FavoriteCardInfoPanelProps {
 export default function FavoriteCardInfoPanel({ restaurant, onClose }: FavoriteCardInfoPanelProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-
       <div className="relative bg-white rounded-2xl shadow-xl w-[950px] max-h-[90vh] flex flex-col">
         {/* Close button */}
         <button
@@ -21,12 +20,13 @@ export default function FavoriteCardInfoPanel({ restaurant, onClose }: FavoriteC
           ×
         </button>
         {/* Info Panel Content */}
-        <div className=" w-[600px] flex self-center">
-          <CardBoxInfoPanel
-            restaurant={restaurant}
-            className="h-[80vh]"
-            onWheel={e => e.stopPropagation()}
-          />
+        <div className="w-full max-w-[600px] flex self-center h-[80vh]">
+          <div className="w-full h-full overflow-y-auto">
+            <CardBoxInfoPanel
+              restaurant={restaurant}
+              className="min-h-full"
+            />
+          </div>
         </div>
       </div>
     </div>
