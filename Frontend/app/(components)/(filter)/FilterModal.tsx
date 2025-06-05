@@ -230,16 +230,6 @@ export default function FilterModal({
   if (!isOpen) return null
 
   return (
-    // <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30">
-    //   <div
-    //     className="bg-white rounded-lg overflow-y-auto mt-[92px]"
-    //     style={{
-    //       width: "1121px",
-    //       height: "839px",
-    //       maxHeight: "calc(100vh - 120px)",
-    //     }}
-    //   >
-    // In FilterModal.tsx
     <div
       className={`
       ${isOpen ? "fixed inset-0 bg-black/30 z-50" : "bg-transparent"}
@@ -248,19 +238,18 @@ export default function FilterModal({
     >
       <div
         className={`
-        bg-white opacity-95 rounded-lg overflow-y-auto m-10
+        bg-white opacity-95 rounded-xl overflow-none m-10 py-4 pl-4
         ${isOpen ? "mt-[92px]" : "mt-0 rounded-none"} // Remove rounded corners in page mode
       `}
         style={{
-          width: isOpen ? "1121px" : "100%",
-          height: isOpen ? "839px" : "100vh",
-          maxHeight: isOpen ? "calc(100vh - 120px)" : "none",
+          width: isOpen ? "950px" : "100%",
+          height: isOpen ? "720px" : "100vh",
         }}
         onWheel={e => e.stopPropagation()}
       >
         {/* Modal header */}
         <div className="sticky top-0 bg-white p-4 flex justify-between items-center z-10">
-          <h2 className="text-3xl font-bold">Customize Filters</h2>
+          <h2 className="text-2xl">Customize Filters</h2>
           {isOpen && (
             <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
               <XMarkIcon className="w-6 h-6" />
@@ -269,34 +258,33 @@ export default function FilterModal({
         </div>
 
         {/* Location and Search Section */}
-        <div className="bg-white rounded-lg w-full">
-          <div className="p-6">
+        <div className="bg-white rounded-lg w-full pr-4">
+          <div className="px-3">
             <LocationSection selectedLocation={selectedLocation} onLocationChange={setSelectedLocation} />
           </div>
         </div>
 
         {/* Main content */}
-        <div className="p-8">
+        <div className="pt-6 pl-6 pr-4">
           {/* Two-column layout with table */}
           <table className="w-full border-collapse">
             <tbody>
               <tr>
                 {/* Left column - Main filters */}
-                <td className="align-top w-2/3 pr-8 border-r border-gray-200">
+                <td className="align-top w-3/4 pr-8 border-r border-gray-200">
                   {/* Category Section */}
-                  <div className="mb-12">
-                    <h3 className="text-3xl font-medium mb-6">Category</h3>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-medium mb-4">Category</h3>
                     <div className="flex flex-wrap gap-3">
                       {/* Predefined categories */}
                       {categories.map((category) => (
                         <button
                           key={category}
                           onClick={() => toggleCategory(category)}
-                          className={`px-5 py-3 rounded-full text-base ${
-                            selectedCategories.includes(category)
-                              ? "bg-black text-white"
-                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                          }`}
+                          className={`px-4 py-2 rounded-full text-sm ${selectedCategories.includes(category)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            }`}
                         >
                           {category}
                         </button>
@@ -307,7 +295,7 @@ export default function FilterModal({
                         <button
                           key={`custom-${category}`}
                           onClick={() => toggleCustomCategory(category)}
-                          className="px-5 py-3 rounded-full text-base bg-black text-white"
+                          className="px-4 py-2 rounded-full text-sm bg-black text-white"
                         >
                           {category}
                         </button>
@@ -315,7 +303,7 @@ export default function FilterModal({
 
                       {/* Custom preference input */}
                       {isEnteringPreference ? (
-                        <div className="flex items-center px-2 py-1 rounded-full bg-gray-100 min-w-[200px]">
+                        <div className="text-sm flex items-center px-2 py-1 rounded-full bg-gray-100 min-w-[200px]">
                           <input
                             ref={customInputRef}
                             type="text"
@@ -329,19 +317,19 @@ export default function FilterModal({
                               }
                             }}
                             placeholder="Type and press Enter"
-                            className="bg-transparent border-none outline-none px-3 py-2 w-full"
+                            className="bg-transparent border-none outline-none px-3 w-full"
                           />
                           <button
                             onClick={handleAddCustomPreference}
                             className="ml-2 p-1 rounded-full hover:bg-gray-200"
                           >
-                            <CheckIcon className="w-5 h-5" />
+                            <CheckIcon className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setIsEnteringPreference(true)}
-                          className="px-5 py-3 rounded-full text-base bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          className="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-800 hover:bg-gray-200"
                         >
                           Enter Your Preference
                         </button>
@@ -350,8 +338,8 @@ export default function FilterModal({
                   </div>
 
                   {/* Distance Section */}
-                  <div className="mb-12">
-                    <h3 className="text-3xl font-medium mb-6">Distance</h3>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-medium mb-2">Distance</h3>
                     <div className="px-2">
                       <div className="relative">
                         <input
@@ -361,10 +349,10 @@ export default function FilterModal({
                           step="0.1"
                           value={distance}
                           onChange={(e) => setDistance(Number.parseFloat(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-0"
                         />
                       </div>
-                      <div className="flex justify-between mt-2 text-base text-gray-500">
+                      <div className="flex justify-between mt-2 text-base text-black">
                         <span>0.0 km</span>
                         <span>10.0 km</span>
                       </div>
@@ -372,8 +360,8 @@ export default function FilterModal({
                   </div>
 
                   {/* Ratings Section */}
-                  <div className="mb-12">
-                    <h3 className="text-3xl font-medium mb-6">Ratings</h3>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-medium mb-2">Ratings</h3>
                     <div className="px-2">
                       <div className="relative">
                         <input
@@ -383,7 +371,7 @@ export default function FilterModal({
                           step="1"
                           value={rating}
                           onChange={(e) => setRating(Number.parseInt(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-0"
                         />
                       </div>
                       <div className="flex justify-between mt-2 text-base">
@@ -422,7 +410,7 @@ export default function FilterModal({
 
                   {/* Price Section */}
                   <div className="mb-12">
-                    <h3 className="text-3xl font-medium mb-6">Price</h3>
+                    <h3 className="text-xl font-medium mb-2">Price</h3>
                     <div className="px-2">
                       <div className="relative">
                         <input
@@ -432,13 +420,13 @@ export default function FilterModal({
                           step="1"
                           value={price}
                           onChange={(e) => setPrice(Number.parseInt(e.target.value))}
-                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black [&::-moz-range-thumb]:border-0"
                         />
                       </div>
                       <div className="flex justify-between mt-2 text-base font-medium">
                         <span>$</span>
-                        <span>$$</span>
-                        <span>$$$</span>
+                        <span>&#160;&#160;&#160;&#160;&#160;$$</span>
+                        <span>&#160;&#160;$$$</span>
                         <span>$$$$</span>
                       </div>
                     </div>
@@ -446,14 +434,14 @@ export default function FilterModal({
                 </td>
 
                 {/* Right column - Dropdowns */}
-                <td className="align-top w-1/3 pl-8">
-                  <h3 className="text-2xl font-medium mb-6">Additional Options</h3>
+                <td className="align-top w-1/4 pl-6">
+                  <h3 className="text-xl font-base mb-6">Additional Options</h3>
 
                   {/* Sort By Dropdown */}
                   <div ref={sortDropdownRef} className="relative mb-6">
                     <button
                       onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                      className="flex items-center gap-2 px-4 py-3 border rounded-full text-base hover:bg-gray-50 w-full justify-between"
+                      className="flex items-center gap-2 px-4 py-2 border rounded-full text-base hover:bg-gray-50 w-full justify-between"
                     >
                       <div className="flex items-center gap-2">
                         <ClockIcon className="w-5 h-5" />
@@ -463,13 +451,12 @@ export default function FilterModal({
                     </button>
 
                     {isSortDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-full bg-white rounded-md shadow-lg z-20">
+                      <div className="absolute text-sm left-0 mt-2 w-full bg-white rounded-md shadow-lg z-20">
                         {sortOptions.map((option) => (
                           <button
                             key={option}
-                            className={`w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center ${
-                              option === sortBy ? "font-medium" : ""
-                            }`}
+                            className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center ${option === sortBy ? "font-sm" : ""
+                              }`}
                             onClick={() => {
                               setSortBy(option)
                               setIsSortDropdownOpen(false)
@@ -495,7 +482,7 @@ export default function FilterModal({
                   <div ref={attributesDropdownRef} className="relative mb-12">
                     <button
                       onClick={() => setIsAttributesDropdownOpen(!isAttributesDropdownOpen)}
-                      className="flex items-center gap-2 px-4 py-3 border rounded-full text-base hover:bg-gray-50 w-full justify-between"
+                      className="flex items-center gap-2 px-4 py-2 border rounded-full text-base hover:bg-gray-50 w-full justify-between"
                     >
                       <div className="flex items-center gap-2">
                         <ChatBubbleLeftIcon className="w-5 h-5" />
@@ -505,13 +492,12 @@ export default function FilterModal({
                     </button>
 
                     {isAttributesDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-full bg-white rounded-md shadow-lg z-20">
+                      <div className="absolute text-sm left-0 mt-2 w-full bg-white rounded-md shadow-lg z-20">
                         {attributeOptions.map((option) => (
                           <button
                             key={option}
-                            className={`w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center ${
-                              selectedAttributes.includes(option) ? "font-medium" : ""
-                            }`}
+                            className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center ${selectedAttributes.includes(option) ? "font-sm" : ""
+                              }`}
                             onClick={() => toggleAttribute(option)}
                           >
                             <div className="w-6 h-6 mr-2 flex items-center justify-center">
@@ -527,20 +513,22 @@ export default function FilterModal({
                       </div>
                     )}
                   </div>
+
+
+                  {/* Apply Button */}
+                  <div className="flex mt-[320px] ml-14">
+                    <button
+                      onClick={handleApply}
+                      className="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-base"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          {/* Apply Button */}
-          <div className="flex justify-end mt-8">
-            <button
-              onClick={handleApply}
-              className="px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-lg"
-            >
-              Apply Filters
-            </button>
-          </div>
         </div>
       </div>
     </div>
