@@ -32,7 +32,7 @@ Yelp Fusion API를 활용해 사용자의 조건과 취향에 맞는 식당을 *
 ## 🛠 기술 스택
 
 - **Frontend**: Next.js (React), TypeScript, TailwindCSS  
-- **Backend**: Elysia, Node.js, TypeScript  
+- **Backend**: Elysia, Node.js, TypeScript, mySQL
 - **API**: Yelp Fusion API  
 - **협업 도구**: GitHub, Figma
 
