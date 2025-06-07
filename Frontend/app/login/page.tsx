@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { signUp, logIn, initializeDatabase } from "../(api)/api/auth"
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation"
+import { RestaurantInfo } from "@/types/restaurant"
 
 export default function Login() {
   const [isHidden, setIsHidden] = useState(true)
@@ -60,7 +61,7 @@ export default function Login() {
       const resp = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email:email.trim().toLowerCase(), password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
         credentials: "include",
       });
 
@@ -83,22 +84,35 @@ export default function Login() {
       if (guestFavorites.length > 0) {
         try {
           // Add each guest favorite to the user's favorites
-          for (const restaurant of guestFavorites) {
-            await fetch("/api/favorites", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: user.id,
-                restaurant,
-                restaurantId: restaurant.id,
-                restaurantName: restaurant.name
-              }),
-            });
-          }
-          // Clear guest favorites after merging
+          const transferPromises = guestFavorites.map(async (restaurant: RestaurantInfo) => {
+            try {
+              const response = await fetch("/api/favorites", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userId: user.id,
+                  restaurant,
+                  restaurantId: restaurant.id,
+                  restaurantName: restaurant.name
+                }),
+              });
+              
+              if (!response.ok) {
+                console.error(`Failed to transfer favorite: ${restaurant.name}`);
+              }
+            } catch (error) {
+              console.error(`Error transferring favorite ${restaurant.name}:`, error);
+            }
+          });
+
+          // Wait for all transfers to complete
+          await Promise.all(transferPromises);
+          
+          // Clear guest favorites after successful transfer
           localStorage.removeItem("favorites");
         } catch (error) {
           console.error("Error merging favorites:", error);
+          // Don't throw here - we still want to complete the login process
         }
       }
 
@@ -109,14 +123,12 @@ export default function Login() {
       // 5. Clear the form
       setEmail("");
       setPassword("");
-      setTimeout(() => {
-        router.push("/home");
-      }, 2000)
 
-    } catch (err) {
-      console.error(err);
+      // 6. Redirect to home page
+      window.location.href = "/home";
+    } catch (error) {
+      console.error("Login error:", error);
       setError("An unexpected error occurred");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -386,7 +398,9 @@ export default function Login() {
           </div>
 
           {/* @@@@@@@@@@@@ right box @@@@@@@@@@@@ */}
-          <div className="flex-1 bg-gray-500"></div>
+          <div className="flex-1 bg-gray-500 w-500px h-500px">
+            <img src="shutterstock_1538500832.0.webp" alt="Login Background" className="w-full h-full object-cover" />
+          </div>
         </div>
       </div>
     </>

@@ -33,10 +33,18 @@ export async function initializeDatabase() {
         country VARCHAR(50),
         timeZone VARCHAR(50),
         language VARCHAR(50),
-        profile_image MEDIUMTEXT DEFAULT '/profile-icon.svg',
+        profile_image MEDIUMTEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+
+    // Create trigger to set default profile image for new users
+    /*await connection.query(`
+      CREATE TRIGGER IF NOT EXISTS set_default_profile_image
+      BEFORE INSERT ON users
+      FOR EACH ROW
+      SET NEW.profile_image = COALESCE(NEW.profile_image, '/profile-icon.svg')
+    `)*/
 
 
     await connection.query(`
@@ -154,5 +162,25 @@ export async function logIn(email: string, password: string) {
   } catch (error) {
     console.error("Error logging in:", error)
     return { success: false, error: "Failed to log in" }
+  }
+}
+
+export async function getUserFromToken(token: string) {
+  try {
+    const response = await fetch("http://localhost:3000/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to get user data")
+    }
+
+    const data = await response.json()
+    return data.user
+  } catch (error) {
+    console.error("Error getting user data:", error)
+    return null
   }
 }

@@ -8,14 +8,14 @@ config()
 const YELP_API_KEY = process.env.YELP_API_KEY
 
 function mapSortKey(key: string): string {
-  switch (key) {
-    case 'Ratings':
+  switch (key?.toLowerCase()) {
+    case 'ratings':
       return 'rating'
-    case 'Number of Reviews':
+    case 'number of reviews':
       return 'review_count'
-    case 'Distance':
+    case 'distance':
       return 'distance'
-    case 'Best':
+    case 'best':
     default:
       return 'best_match'
   }
@@ -32,7 +32,7 @@ export const searchPlugin = new Elysia()
       categories,
       distance,
       price,
-      sortBy,
+      sort_by,
       attributes
     } = query
 
@@ -60,8 +60,7 @@ export const searchPlugin = new Elysia()
       attributes: parsedAttributes,
       price: price ? String(price) : undefined,
       limit: 50,
-      //open_now: true,
-      sort_by: mapSortKey(sortBy),
+      sort_by: mapSortKey(sort_by as string),
     }
 
     //distance 처리
@@ -71,6 +70,7 @@ export const searchPlugin = new Elysia()
         params.radius = radiusInMeters
       }
     }
+
     const baseUrl = 'https://api.yelp.com/v3/businesses/search'
     const queryString = qs.stringify(params, { arrayFormat: 'repeat' })
     console.clear()
@@ -84,7 +84,6 @@ export const searchPlugin = new Elysia()
         params,
         paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
       })
-
 
       const businesses = response.data.businesses.map((biz: any, index: number) => ({
         id: `yelp_${biz.id}_${Date.now()}_${index}`,

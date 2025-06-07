@@ -14,20 +14,26 @@ interface ListBoxHolderProps {
 export default function ListBoxHolder({ tagFilters }: ListBoxHolderProps) {
   const [restaurants, setRestaurants] = useState<RestaurantInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
-
+  const [error, setError] = useState<string | null>(null)
   const [infoRestaurant, setInfoRestaurant] = useState<RestaurantInfo | null>(null)
 
-  // Load favorites from localStorage on component mount
-useEffect(() => {
-    const fetchInitialRestaurants = async () => {
-      const initialRestaurants = await getRestaurants({ ...tagFilters, size: 5, skip: 0 })
-      setRestaurants(initialRestaurants)
-      setIsLoading(false)
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const fetchedRestaurants = await getRestaurants({ ...tagFilters, size: 5, skip: 0 })
+        setRestaurants(fetchedRestaurants)
+      } catch (error) {
+        console.error("Failed to fetch restaurants:", error)
+        setError("Failed to load restaurants. Please try again.")
+      } finally {
+        setIsLoading(false)
+      }
     }
-    fetchInitialRestaurants()
-  }, [])
 
+    fetchRestaurants()
+  }, [tagFilters])
 
   return (
     <div className="w-full flex justify-center">
@@ -37,6 +43,20 @@ useEffect(() => {
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
               <p className="mt-4 text-gray-600">Loading restaurants...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="mt-4 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+              >
+                Retry
+              </button>
+            </div>
+          ) : restaurants.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No restaurants found matching your filters.</p>
             </div>
           ) : (
             restaurants.map((restaurant) => (

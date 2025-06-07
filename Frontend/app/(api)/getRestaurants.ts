@@ -22,6 +22,20 @@ interface GetRestaurantsParams extends TagFilters {
   skip?: number
 }
 
+function mapSortKey(key: string): string {
+  switch (key?.toLowerCase()) {
+    case 'ratings':
+      return 'rating'
+    case 'number of reviews':
+      return 'review_count'
+    case 'distance':
+      return 'distance'
+    case 'best':
+    default:
+      return 'best_match'
+  }
+}
+
 export async function getRestaurants({
   location,
   category = [],
@@ -39,34 +53,34 @@ export async function getRestaurants({
   skip = 0,
 }: GetRestaurantsParams): Promise<RestaurantInfo[]> {
   const params = new URLSearchParams({
-    location: location?? "92612",
+    location: location ?? "92612",
     limit: size.toString(),
-    radius: distance,
-    //ratings: ratings.toString() || "1.0",
-    //delivery: delivery.toString(),
+    radius: distance?.toString() ?? "5",
+    ratings: ratings?.toString() ?? "0",
     categories: category.length > 0 ? category.join(',') : 'asian',
-    attributes: Array.isArray(attributes) && attributes.length > 0 ? attributes.join(','): 'open_to_all',
+    attributes: Array.isArray(attributes) && attributes.length > 0 ? attributes.join(',') : 'open_to_all',
     price: price?.toString() ?? '2',
-    sort_by: sortBy ?? 'best_match',
-    // size: size.toString(),
-    // skip: skip.toString(),
+    sort_by: mapSortKey(sortBy ?? 'Best'),
+    offset: skip.toString(),
   })
- 
-
 
   const url = `http://localhost:3000/search?${params.toString()}`
   console.log("Sending request to:", url)
 
-  const res = await fetch(url)
-  if (!res.ok) {
-    console.error("API 요청 실패:", res.status, res.statusText)
-    throw new Error("API 요청 실패")
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      console.error("API request failed:", res.status, res.statusText)
+      throw new Error(`API request failed: ${res.status} ${res.statusText}`)
+    }
+
+    const data = await res.json()
+    console.log("Received data:", data)
+    return data
+  } catch (error) {
+    console.error("Error fetching restaurants:", error)
+    throw error
   }
-
-  const data = await res.json()
-  console.log("받은 데이터:", data)
-
-  return data
 }
 
 
